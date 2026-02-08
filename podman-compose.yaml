@@ -2,10 +2,16 @@
 # Root compose file for local development - runs both front-end and back-end together
 version: "3.9"
 
+x-image-config: &image-config
+    REGISTRY: ${REGISTRY:-localhost}
+    BACKEND_IMAGE: ${BACKEND_IMAGE:-poopyfeed-be}
+    FRONTEND_IMAGE: ${FRONTEND_IMAGE:-poopyfeed-fe}
+    IMAGE_TAG: ${IMAGE_TAG:-latest}
+
 services:
     # PostgreSQL database
     db:
-        image: docker.io/postgres:14
+        image: docker.io/postgres:${POSTGRES_VERSION:-14}
         container_name: poopyfeed-db
         volumes:
             - postgres_data:/var/lib/postgresql/data/
@@ -16,7 +22,7 @@ services:
 
     # Django back-end
     backend:
-        image: localhost/poopyfeed-be:latest
+        image: ${REGISTRY:-localhost}/${BACKEND_IMAGE:-poopyfeed-be}:${IMAGE_TAG:-latest}
         container_name: poopyfeed-backend
         build:
             context: ./back-end
@@ -47,7 +53,7 @@ services:
 
     # Angular front-end
     frontend:
-        image: localhost/poopyfeed-fe:latest
+        image: ${REGISTRY:-localhost}/${FRONTEND_IMAGE:-poopyfeed-fe}:${IMAGE_TAG:-latest}
         container_name: poopyfeed-frontend
         build:
             context: ./front-end
