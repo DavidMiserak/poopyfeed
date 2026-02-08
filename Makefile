@@ -21,9 +21,10 @@ help:
 	@echo "make shell-backend    - Django shell access"
 	@echo ""
 	@echo "Front-end Commands:"
-	@echo "make test-frontend    - Run front-end tests"
-	@echo "make shell-frontend   - Front-end container shell"
-	@echo "make build-frontend   - Build production front-end"
+	@echo "make test-frontend             - Run front-end tests"
+	@echo "make test-frontend-coverage    - Run front-end tests with coverage (for SonarQube)"
+	@echo "make shell-frontend            - Front-end container shell"
+	@echo "make build-frontend            - Build production front-end"
 	@echo ""
 	@echo "Development Setup:"
 	@echo "make setup            - Initial setup (install hooks, build images)"
@@ -93,6 +94,11 @@ createsuperuser:
 test-frontend:
 	@echo "Running front-end tests..."
 	$(RUNTIME) compose exec frontend npm test
+
+.PHONY: test-frontend-coverage
+test-frontend-coverage:
+	@echo "Running front-end tests with coverage..."
+	$(RUNTIME) compose exec frontend npm test -- --coverage.enabled=true
 
 .PHONY: shell-frontend
 shell-frontend:
