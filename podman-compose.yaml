@@ -1,0 +1,75 @@
+# podman-compose.yaml
+# Root compose file for local development - runs both front-end and back-end together
+version: "3.9"
+
+services:
+    # PostgreSQL database
+    db:
+        image: docker.io/postgres:14
+        container_name: poopyfeed-db
+        volumes:
+            - postgres_data:/var/lib/postgresql/data/
+        environment:
+            - "POSTGRES_HOST_AUTH_METHOD=trust"
+        networks:
+            - poopyfeed-network
+
+    # Django back-end
+    backend:
+        image: localhost/poopyfeed-be:latest
+        container_name: poopyfeed-backend
+        build:
+            context: ./back-end
+            dockerfile: Containerfile
+        command: python /code/manage.py runserver 0.0.0.0:8000
+        volumes:
+            - ./back-end:/code
+        ports:
+            - "8000:8000"
+        environment:
+            - "DJANGO_SECRET_KEY=change-this-key" # nosec B105
+            - "DJANGO_DEBUG=True"
+            - "DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,backend"
+            - "DJANGO_SECURE_SSL_REDIRECT=False"
+            - "DJANGO_SECURE_HSTS_SECONDS=0"
+            - "DJANGO_SECURE_HSTS_INCLUDE_SUBDOMAINS=False"
+            - "DJANGO_SECURE_HSTS_PRELOAD=False"
+            - "DJANGO_SESSION_COOKIE_SECURE=False"
+            - "DJANGO_CSRF_COOKIE_SECURE=False"
+            - "DATABASE_HOST=db"
+            - "DATABASE_NAME=postgres"
+            - "DATABASE_USER=postgres"
+            - "DATABASE_PASSWORD="
+        depends_on:
+            - db
+        networks:
+            - poopyfeed-network
+
+    # Angular front-end
+    frontend:
+        image: localhost/poopyfeed-fe:latest
+        container_name: poopyfeed-frontend
+        build:
+            context: ./front-end
+            dockerfile: Containerfile
+            target: development
+        command: npm start -- --host 0.0.0.0
+        volumes:
+            - ./front-end/poopyfeed:/app
+            - /app/node_modules
+        ports:
+            - "4200:4200"
+        environment:
+            - "NODE_ENV=development"
+            - "API_URL=http://backend:8000" # Internal network URL
+        depends_on:
+            - backend
+        networks:
+            - poopyfeed-network
+
+networks:
+    poopyfeed-network:
+        driver: bridge
+
+volumes:
+    postgres_data:
