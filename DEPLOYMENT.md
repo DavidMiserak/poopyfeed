@@ -7,7 +7,7 @@ back-end (Django) together for local development.
 
 ```mermaid
 graph TB
-    subgraph "PoopyFeed Network (Bridge)"
+    subgraph "Container Network"
         frontend["Frontend (Angular)<br/>Container: frontend<br/>Port: 4200"]
         backend["Backend (Django)<br/>Container: backend<br/>Port: 8000"]
         db["Database (Postgres)<br/>Container: db<br/>Port: 5432"]
