@@ -93,12 +93,12 @@ createsuperuser:
 .PHONY: test-frontend
 test-frontend:
 	@echo "Running front-end tests..."
-	$(RUNTIME) compose exec frontend npm test
+	$(RUNTIME) compose exec frontend npm test -- --watch=false
 
 .PHONY: test-frontend-coverage
 test-frontend-coverage:
 	@echo "Running front-end tests with coverage..."
-	$(RUNTIME) compose exec frontend npm test -- --coverage.enabled=true
+	$(RUNTIME) compose exec frontend npm test -- --coverage=true --watch=false
 
 .PHONY: shell-frontend
 shell-frontend:
