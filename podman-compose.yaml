@@ -9,6 +9,23 @@ x-image-config: &image-config
     IMAGE_TAG: ${IMAGE_TAG:-latest}
 
 services:
+    # Redis cache & session store
+    redis:
+        image: docker.io/redis:7-alpine
+        container_name: poopyfeed-redis
+        command: redis-server --appendonly yes --appendfsync everysec
+        volumes:
+            - redis_data:/data
+        ports:
+            - "6379:6379"
+        networks:
+            - poopyfeed-network
+        healthcheck:
+            test: ["CMD", "redis-cli", "ping"]
+            interval: 10s
+            timeout: 3s
+            retries: 3
+
     # PostgreSQL database
     db:
         image: docker.io/postgres:${POSTGRES_VERSION:-14}
@@ -46,8 +63,13 @@ services:
             - "DATABASE_NAME=postgres"
             - "DATABASE_USER=postgres"
             - "DATABASE_PASSWORD="
+            - "REDIS_HOST=redis"
+            - "REDIS_PORT=6379"
+            - "CELERY_BROKER_URL=redis://redis:6379/0"
+            - "CELERY_RESULT_BACKEND=redis://redis:6379/1"
         depends_on:
             - db
+            - redis
         networks:
             - poopyfeed-network
 
@@ -79,3 +101,4 @@ networks:
 
 volumes:
     postgres_data:
+    redis_data:

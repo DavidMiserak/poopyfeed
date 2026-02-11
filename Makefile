@@ -26,6 +26,12 @@ help:
 	@echo "make shell-frontend            - Front-end container shell"
 	@echo "make build-frontend            - Build production front-end"
 	@echo ""
+	@echo "Redis & Celery Commands:"
+	@echo "make redis-cli         - Open Redis CLI"
+	@echo "make redis-flush       - Clear all Redis data (WARNING: also clears sessions)"
+	@echo "make celery-worker     - Start Celery worker (run in separate terminal)"
+	@echo "make celery-beat       - Start Celery beat scheduler (run in separate terminal)"
+	@echo ""
 	@echo "Development Setup:"
 	@echo "make setup            - Initial setup (install hooks, build images)"
 	@echo "make pre-commit-setup - Install pre-commit hooks"
@@ -126,3 +132,27 @@ pre-commit-setup:
 	@echo "Installing pre-commit hooks in front-end..."
 	cd front-end && $(MAKE) pre-commit-setup
 	@echo "Pre-commit hooks installed!"
+
+# Redis and Celery Commands
+.PHONY: redis-cli
+redis-cli:
+	$(RUNTIME) compose exec redis redis-cli
+
+.PHONY: redis-flush
+redis-flush:
+	@echo "WARNING: This will clear all Redis data including sessions and cache!"
+	@read -p "Type 'yes' to confirm: " confirm; \
+	if [ "$$confirm" = "yes" ]; then \
+		$(RUNTIME) compose exec redis redis-cli FLUSHALL; \
+		@echo "Redis cleared!"; \
+	else \
+		@echo "Cancelled."; \
+	fi
+
+.PHONY: celery-worker
+celery-worker:
+	$(RUNTIME) compose exec backend celery -A django_project worker -l info
+
+.PHONY: celery-beat
+celery-beat:
+	$(RUNTIME) compose exec backend celery -A django_project beat -l info
