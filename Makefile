@@ -55,15 +55,15 @@ stop:
 
 .PHONY: logs
 logs:
-	$(RUNTIME) compose logs -f
+	$(RUNTIME) compose logs
 
 .PHONY: logs-backend
 logs-backend:
-	$(RUNTIME) compose logs -f backend
+	$(RUNTIME) compose logs backend
 
 .PHONY: logs-frontend
 logs-frontend:
-	$(RUNTIME) compose logs -f frontend
+	$(RUNTIME) compose logs frontend
 
 .PHONY: restart
 restart: stop run
