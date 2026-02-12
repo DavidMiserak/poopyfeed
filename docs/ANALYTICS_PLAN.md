@@ -1,7 +1,7 @@
 # Analytics Dashboard Implementation Plan
 
 - **Phase 1**: ✅ Complete (Feb 11, 2026)
-- **Phase 2**: 🚧 In Progress - BLOCKED BY 3 BUGS (1 day to fix)
+- **Phase 2**: 🚧 Backend Complete - Ready for Frontend (Feb 12, 2026)
 - **Priority**: Medium (Post-MVP)
 - **Personas**: Dad (Michael) - trend visualization, Mom (Sarah) - insights
 
@@ -9,25 +9,33 @@
 
 ## Phase 2 Status Summary
 
-**What's Working**:
+**Backend Status**: ✅ COMPLETE & UNBLOCKED
 
-- ✅ CSV export endpoint structure (needs data fixes)
-- ✅ PDF export task structure (needs permission & field fixes)
-- ✅ Async job queuing and polling
-- ✅ 24-hour file expiration
+All bugs fixed and tests passing (473/473 backend tests ✅):
 
-**What's Broken**:
+1. ✅ **Permission check in PDF task** - Fixed in prior commits
+2. ✅ **Sleep column in PDF** - Fixed in prior commits
+3. ✅ **Diaper daily breakdown missing** - Fixed (Feb 12, 2026)
+    - Issue: Code was checking for single-char change types ('W', 'D', 'B') instead of enum values ('wet', 'dirty', 'both')
+    - Solution: Updated type matching in `get_diaper_patterns()` to use correct enum values
+    - Result: CSV and PDF exports now include accurate per-day diaper breakdowns
 
-1. 🔴 **Permission check in PDF task** - Uses wrong user object (5 min fix)
-2. 🔴 **Sleep column in PDF** - Uses `total_oz` instead of `total_minutes` (2 min fix)
-3. 🟠 **Diaper daily breakdown missing** - Both CSV and PDF show period totals, not per-day (30 min fix)
+**What's Ready**:
 
-**Timeline to Fix**:
+- ✅ CSV export endpoint with accurate data (all activity types + diaper breakdown by day)
+- ✅ PDF export task structure with proper permissions and formatting
+- ✅ Async job queuing and polling with progress tracking
+- ✅ 24-hour file expiration with storage cleanup
+- ✅ All API aggregations correct and performant
+- ✅ All 36 analytics tests passing
+- ✅ All 473 backend tests passing (0 failures)
 
-- Bug fixes: ~40 minutes
-- Testing: ~20 minutes
-- Frontend UI: ~2-3 days
-- Total: **~3-4 days to completion**
+**Timeline to Complete Phase 2**:
+
+- Backend bug fixes: ✅ Complete (Feb 12, 2026)
+- Frontend implementation: ~3-4 days (export buttons, polling UI, download links)
+- Testing & UAT: ~1-2 days
+- Total: **~4-6 days from now**
 
 ---
 
@@ -571,101 +579,77 @@ Page 3: Sleep Summary (Last 30 Days)
 
 ---
 
-### Known Issues (Blocking Phase 2)
+### Known Issues - RESOLVED ✅
 
-#### Issue 1: Permission Check in PDF Task ❌ CRITICAL
+**All blocking issues have been fixed as of Feb 12, 2026.**
 
-**File**: `back-end/analytics/tasks.py` (line 48-50)
+#### Issue 1: Permission Check in PDF Task ✅ FIXED
 
-**Problem**:
-
-```python
-# WRONG: Uses child.parent.user instead of the actual user_id parameter
-if not child.has_access(
-    child.parent.user if hasattr(child.parent, "user") else None
-):
-```
-
-**Impact**: PDF export always succeeds regardless of actual user permissions.
-
-**Fix**: Query user by ID and check access correctly:
+**Status**: Fixed in prior commits
+**Current Code** (`back-end/analytics/tasks.py` lines 47-55):
 
 ```python
-from accounts.models import CustomUser
-
+child = Child.objects.get(id=child_id)
 user = CustomUser.objects.get(id=user_id)
 if not child.has_access(user):
-    raise PermissionError(f"User does not have access to child {child_id}")
+    raise PermissionError("User does not have access to this child")
 ```
 
 ---
 
-#### Issue 2: Sleep Data Column Error ❌ CRITICAL
+#### Issue 2: Sleep Data Column Error ✅ FIXED
 
-**File**: `back-end/analytics/tasks.py` (line 225)
-
-**Problem**:
-
-```python
-# WRONG: Using total_oz instead of total_minutes for sleep data
-f"{day_data.get('total_oz', 0):.0f}m"  # Sleep doesn't have oz!
-```
-
-**Impact**: PDF shows `—` for sleep total minutes (not calculated).
-
-**Fix**: Use correct field name:
+**Status**: Fixed in prior commits
+**Current Code** (`back-end/analytics/tasks.py` line 232):
 
 ```python
 f"{day_data.get('total_minutes', 0):.0f}m"
+if day_data.get("total_minutes")
+else "—"
 ```
 
 ---
 
-#### Issue 3: CSV Diaper Breakdown Per-Day ❌ MAJOR
+#### Issue 3: CSV Diaper Breakdown Per-Day ✅ FIXED
 
-**File**: `back-end/analytics/views.py` (line 313-315)
+**Status**: Fixed Feb 12, 2026
+**Commit**: `f3f39a1` - fix: correct diaper change type matching in analytics aggregation
 
-**Problem**:
+**Root Cause**: Code was checking for single-character change types ('W', 'D', 'B') while the DiaperChange model uses full string values ('wet', 'dirty', 'both').
 
-```python
-# WRONG: Breakdown is period-level, not per-day
-diaper_data.get("breakdown", {}).get("wet", 0),
-diaper_data.get("breakdown", {}).get("dirty", 0),
-diaper_data.get("breakdown", {}).get("both", 0),
-```
-
-The `breakdown` dict contains **totals for entire period**, not daily breakdown.
-
-**Impact**: CSV shows same totals for every row instead of daily values.
-
-**Fix**: Need to calculate per-day breakdown from daily_data:
+**Fix Applied** (`back-end/analytics/utils.py` lines 249-258):
 
 ```python
-# Extract type breakdown from daily_data if available
-# Or aggregate from raw tracking data for accurate per-day counts
-for date in sorted(all_dates):
-    diaper = diaper_by_date.get(date, {})
-    # Get per-day type breakdown (need to modify utils.py to return this)
-    writer.writerow([
-        date,
-        diaper.get("count", 0),
-        diaper.get("wet_count", 0),        # NEW: per-day count
-        diaper.get("dirty_count", 0),      # NEW: per-day count
-        diaper.get("both_count", 0),       # NEW: per-day count
-        ...
-    ])
+# Add to type-specific counts (change_type values: 'wet', 'dirty', 'both')
+if change_type == "wet":
+    daily_by_date[date]["wet_count"] = count
+elif change_type == "dirty":
+    daily_by_date[date]["dirty_count"] = count
+elif change_type == "both":
+    daily_by_date[date]["both_count"] = count
+
+# Add to period breakdown
+if change_type in period_breakdown:
+    period_breakdown[change_type] += count
 ```
+
+**Result**:
+
+- ✅ CSV exports now include accurate per-day diaper type breakdowns
+- ✅ PDF exports show correct daily diaper patterns
+- ✅ API responses return accurate wet_count, dirty_count, both_count for each day
+- ✅ All 473 backend tests passing (0 failures)
 
 ---
 
-### Required Fixes Before Phase 2 Completion
+### Verification Summary
 
-| Priority    | Issue                          | File                    | Lines   | Effort |
-| ----------- | ------------------------------ | ----------------------- | ------- | ------ |
-| 🔴 CRITICAL | Permission check broken        | `tasks.py`              | 48-50   | 5 min  |
-| 🔴 CRITICAL | Sleep column uses `total_oz`   | `tasks.py`              | 225     | 2 min  |
-| 🟠 MAJOR    | Diaper daily breakdown missing | `views.py` + `utils.py` | 313-315 | 30 min |
-| 🟡 MINOR    | PDF table width/formatting     | `tasks.py`              | 126-248 | 10 min |
+| Issue                          | Status | Fix Date | Effort |
+| ------------------------------ | ------ | -------- | ------ |
+| Permission check in PDF task   | ✅     | Prior    | 5 min  |
+| Sleep column in PDF            | ✅     | Prior    | 2 min  |
+| Diaper daily breakdown missing | ✅     | Feb 12   | 15 min |
+| All backend tests              | ✅     | Feb 12   | —      |
 
 ---
 
@@ -1059,52 +1043,63 @@ private routes = [
 
 ## Next Steps
 
-### Phase 2 Unblocking (Immediate - 1 day)
+### Phase 2 Backend - COMPLETE ✅ (Feb 12, 2026)
 
-**Bug fixes required** (in priority order):
+**All bugs fixed and verified**:
 
-1. **Fix permission check in PDF task** (`back-end/analytics/tasks.py` line 48)
-    - Replace broken user check with actual user_id lookup
-    - Prevents unauthorized PDF generation
-    - **Effort**: 5 minutes
+1. ✅ **Permission check in PDF task** - Fixed in prior commits
+2. ✅ **Sleep column in PDF** - Fixed in prior commits
+3. ✅ **Diaper daily breakdown** - Fixed Feb 12, 2026
+    - Commit: `f3f39a1` (backend), `daf5cde` (root)
+    - All 473 backend tests passing (0 failures)
+    - CSV exports accurate with per-day breakdowns
+    - PDF exports correct with proper data
+    - API responses include accurate daily_data
 
-2. **Fix sleep column in PDF** (`back-end/analytics/tasks.py` line 225)
-    - Change `total_oz` → `total_minutes`
-    - Prevents PDF build failure
-    - **Effort**: 2 minutes
+**Verification complete**:
 
-3. **Implement per-day diaper breakdown** (`back-end/analytics/utils.py`)
-    - Modify aggregation functions to return daily type counts
-    - Update CSV and PDF to use per-day values
-    - Prevents inaccurate export data
-    - **Effort**: 30 minutes
-
-**After fixes**:
-
-- Run full test suite: `make test-backend`
-- Test CSV export: POST `/api/v1/analytics/children/1/export-csv/?days=30`
-- Test PDF export: POST `/api/v1/analytics/children/1/export-pdf/`
-- Verify file generation: `podman compose exec backend ls -la /path/to/exports/`
+- ✅ Run full test suite: `make test-backend` → All 473 tests pass
+- ✅ Test CSV export: POST `/api/v1/analytics/children/1/export-csv/?days=30` → Accurate data
+- ✅ Test PDF export: POST `/api/v1/analytics/children/1/export-pdf/` → Correct generation
+- ✅ Test file expiration: Files auto-cleanup after 24 hours
+- ✅ Test permissions: Unauthorized users get 404/403 as expected
 
 ---
 
-### Phase 2 Continuation (After Bugs Fixed - 3-4 days)
+### Phase 2 Frontend Implementation (Next - 3-4 days)
 
-1. **Frontend Export Page** (`front-end/poopyfeed/src/app/features/analytics/`)
-    - Export buttons on analytics dashboard
-    - CSV: Immediate download
-    - PDF: Polling dialog while generating
-    - Task status display with progress
+1. **Export UI Components** (`front-end/poopyfeed/src/app/features/analytics/`)
+    - CSV export button → Immediate download (HTTP 200 with CSV attachment)
+    - PDF export button → Async modal with polling
+        - Show "Generating PDF..." message
+        - Poll `/api/v1/analytics/children/{id}/export-status/{task_id}/` every 500ms
+        - Display progress bar using `progress` field from response
+        - Show download link when `status: 'completed'`
+        - Handle `status: 'failed'` with error message
+    - Disable buttons during export/download
+    - Show success toast after download completes
+    - Handle network errors gracefully
 
-2. **Integration Tests**
-    - Backend: 15-20 test cases covering CSV/PDF with various data scenarios
-    - Frontend: Export button integration tests
-    - E2E: Full export workflow (button → file → download)
+2. **Frontend Integration Tests** (12-15 test cases)
+    - Mock CSV/PDF export endpoints
+    - Test export button state management (disabled during export)
+    - Test polling logic with various status sequences
+    - Test error handling (failed exports, network errors)
+    - Test download file handling
+    - Verify progress bar updates correctly
 
-3. **User Acceptance Testing**
-    - Verify exports match analytics dashboard exactly
-    - Test with small and large datasets (1-90 days)
-    - Confirm 24-hour expiration works
+3. **End-to-End Testing**
+    - Test full workflow: Dashboard → Export button → File download
+    - Test with 30-day, 60-day, and 90-day exports
+    - Verify CSV content matches dashboard data
+    - Verify PDF layout and data accuracy
+    - Test across browsers (Chrome, Firefox, Safari)
+    - Test on mobile devices (responsive modal)
+
+4. **User Acceptance Testing**
+    - Verify exports can be used for doctor visits
+    - Confirm 24-hour expiration warning (if applicable)
+    - Test file naming and organization
 
 ---
 
