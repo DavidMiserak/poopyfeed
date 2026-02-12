@@ -1,9 +1,33 @@
 # Analytics Dashboard Implementation Plan
 
-- **Status**: ✅ Phase 1 Complete (Feb 11, 2026)
+- **Phase 1**: ✅ Complete (Feb 11, 2026)
+- **Phase 2**: 🚧 In Progress - BLOCKED BY 3 BUGS (1 day to fix)
 - **Priority**: Medium (Post-MVP)
 - **Personas**: Dad (Michael) - trend visualization, Mom (Sarah) - insights
-- **Timeline**: Phase 1 Complete ✅ | Phase 2: Pending (4-6 weeks estimate)
+
+---
+
+## Phase 2 Status Summary
+
+**What's Working**:
+
+- ✅ CSV export endpoint structure (needs data fixes)
+- ✅ PDF export task structure (needs permission & field fixes)
+- ✅ Async job queuing and polling
+- ✅ 24-hour file expiration
+
+**What's Broken**:
+
+1. 🔴 **Permission check in PDF task** - Uses wrong user object (5 min fix)
+2. 🔴 **Sleep column in PDF** - Uses `total_oz` instead of `total_minutes` (2 min fix)
+3. 🟠 **Diaper daily breakdown missing** - Both CSV and PDF show period totals, not per-day (30 min fix)
+
+**Timeline to Fix**:
+
+- Bug fixes: ~40 minutes
+- Testing: ~20 minutes
+- Frontend UI: ~2-3 days
+- Total: **~3-4 days to completion**
 
 ---
 
@@ -477,81 +501,341 @@ Route is accessible at `children/{childId}/analytics` after authentication.
 
 ---
 
-### Phase 2: Export & Advanced Features (Weeks 4-6)
+### Phase 2: Export & Advanced Features 🚧 IN PROGRESS
 
-#### 2.1 CSV Export
+#### Status: Partially Implemented (Issues Found)
 
-```python
-# back-end/analytics/views.py
-class ExportCSVView(APIView):
-    permission_classes = [IsAuthenticated, ChildAccessPermission]
+**Implementation**: ✅ CSV export synchronous + PDF export async
+**Backend**: ✅ Celery task structure, ReportLab PDF generation
+**Frontend**: 🚧 Export page partially implemented
+**Issues**: 3 bugs blocking functionality (see Known Issues below)
 
-    def post(self, request, child_id):
-        child = get_object_or_404(Child, id=child_id)
+---
 
-        # Generate CSV in memory
-        csv_buffer = StringIO()
-        writer = csv.writer(csv_buffer)
+#### 2.1 CSV Export ✅ IMPLEMENTED
 
-        # Headers
-        writer.writerow(['Date', 'Feedings', 'Diapers', 'Sleep (min)'])
+**Endpoint**: `POST /api/v1/analytics/children/{child_id}/export-csv/?days=30`
 
-        # Data rows
-        for date in get_date_range(days=30):
-            feedings = Feeding.objects.filter(child=child, created_at__date=date).count()
-            diapers = DiaperChange.objects.filter(child=child, created_at__date=date).count()
-            sleep = Nap.objects.filter(child=child, created_at__date=date).aggregate(Sum('duration_minutes'))
-            writer.writerow([date, feedings, diapers, sleep])
+**Features**:
 
-        response = HttpResponse(csv_buffer.getvalue(), content_type='text/csv')
-        response['Content-Disposition'] = f'attachment; filename="analytics-{child.name}-{date.today()}.csv"'
-        return response
+- ✅ Synchronous response (no job queuing)
+- ✅ All dashboard data included (feedings, diapers, naps)
+- ✅ Diaper breakdown: Wet, Dirty, Both counts
+- ✅ Query parameter: `days=1-90` (default 30)
+- ✅ Proper permissions check via `HasAnalyticsAccess`
+- ✅ Filename includes child name and date range
+
+**Data Format**:
+
+```csv
+Date,Feedings (count),Feedings (avg duration min),Feedings (total oz),Diaper Changes (count),Diaper Changes (wet),Diaper Changes (dirty),Diaper Changes (both),Naps (count),Naps (avg duration min),Naps (total minutes)
+2026-02-01,5,12.5,62.5,6,4,1,1,2,45,90
 ```
 
-#### 2.2 PDF Export (Async Job)
+**Current Issues**: ⚠️ See "Known Issues" section below
+
+---
+
+#### 2.2 PDF Export 🚧 ASYNC JOB (BUGGY)
+
+**Endpoint**: `POST /api/v1/analytics/children/{child_id}/export-pdf/`
+
+**Features**:
+
+- ✅ Asynchronous Celery task execution
+- ✅ ReportLab PDF generation with tables and formatting
+- ✅ 24-hour file expiration
+- ✅ Task polling via status endpoint: `GET /api/v1/analytics/children/{child_id}/export-status/{task_id}/`
+- ✅ Same data as analytics dashboard (feeding trends, diaper patterns, sleep summary)
+- ✅ Diaper breakdown with Wet/Dirty/Both categories
+- ✅ Job timeout: 5 minutes (reasonable for PDF generation)
+
+**Current Issues**: ⚠️ See "Known Issues" section below
+
+**PDF Structure**:
+
+```text
+Page 1: Feeding Trends (Last 30 Days)
+  - Title + timestamp
+  - Daily data table (last 10 days)
+  - Weekly summary stats
+
+Page 2: Diaper Change Patterns (Last 30 Days)
+  - Daily changes table
+  - Breakdown summary (Wet, Dirty, Both totals)
+
+Page 3: Sleep Summary (Last 30 Days)
+  - Daily naps table
+  - Average and trend stats
+```
+
+---
+
+### Known Issues (Blocking Phase 2)
+
+#### Issue 1: Permission Check in PDF Task ❌ CRITICAL
+
+**File**: `back-end/analytics/tasks.py` (line 48-50)
+
+**Problem**:
 
 ```python
-# back-end/analytics/tasks.py
-from celery import shared_task
-from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Table, Paragraph, Spacer
+# WRONG: Uses child.parent.user instead of the actual user_id parameter
+if not child.has_access(
+    child.parent.user if hasattr(child.parent, "user") else None
+):
+```
 
-@shared_task
-def generate_pdf_report(child_id, user_id):
-    child = Child.objects.get(id=child_id)
-    user = User.objects.get(id=user_id)
+**Impact**: PDF export always succeeds regardless of actual user permissions.
 
-    # Generate PDF with charts, summaries, insights
-    filename = f'analytics-{child.name}-{date.today()}.pdf'
-    path = f'/tmp/{filename}'
+**Fix**: Query user by ID and check access correctly:
 
-    doc = SimpleDocTemplate(path, pagesize=letter)
-    story = []
+```python
+from accounts.models import CustomUser
 
-    # Add content...
-    doc.build(story)
+user = CustomUser.objects.get(id=user_id)
+if not child.has_access(user):
+    raise PermissionError(f"User does not have access to child {child_id}")
+```
 
-    # Store file temporarily, return URL
-    return {
-        'filename': filename,
-        'url': f'/api/v1/analytics/download/{filename}/',
-        'expires': (now() + timedelta(hours=24)).isoformat()
+---
+
+#### Issue 2: Sleep Data Column Error ❌ CRITICAL
+
+**File**: `back-end/analytics/tasks.py` (line 225)
+
+**Problem**:
+
+```python
+# WRONG: Using total_oz instead of total_minutes for sleep data
+f"{day_data.get('total_oz', 0):.0f}m"  # Sleep doesn't have oz!
+```
+
+**Impact**: PDF shows `—` for sleep total minutes (not calculated).
+
+**Fix**: Use correct field name:
+
+```python
+f"{day_data.get('total_minutes', 0):.0f}m"
+```
+
+---
+
+#### Issue 3: CSV Diaper Breakdown Per-Day ❌ MAJOR
+
+**File**: `back-end/analytics/views.py` (line 313-315)
+
+**Problem**:
+
+```python
+# WRONG: Breakdown is period-level, not per-day
+diaper_data.get("breakdown", {}).get("wet", 0),
+diaper_data.get("breakdown", {}).get("dirty", 0),
+diaper_data.get("breakdown", {}).get("both", 0),
+```
+
+The `breakdown` dict contains **totals for entire period**, not daily breakdown.
+
+**Impact**: CSV shows same totals for every row instead of daily values.
+
+**Fix**: Need to calculate per-day breakdown from daily_data:
+
+```python
+# Extract type breakdown from daily_data if available
+# Or aggregate from raw tracking data for accurate per-day counts
+for date in sorted(all_dates):
+    diaper = diaper_by_date.get(date, {})
+    # Get per-day type breakdown (need to modify utils.py to return this)
+    writer.writerow([
+        date,
+        diaper.get("count", 0),
+        diaper.get("wet_count", 0),        # NEW: per-day count
+        diaper.get("dirty_count", 0),      # NEW: per-day count
+        diaper.get("both_count", 0),       # NEW: per-day count
+        ...
+    ])
+```
+
+---
+
+### Required Fixes Before Phase 2 Completion
+
+| Priority    | Issue                          | File                    | Lines   | Effort |
+| ----------- | ------------------------------ | ----------------------- | ------- | ------ |
+| 🔴 CRITICAL | Permission check broken        | `tasks.py`              | 48-50   | 5 min  |
+| 🔴 CRITICAL | Sleep column uses `total_oz`   | `tasks.py`              | 225     | 2 min  |
+| 🟠 MAJOR    | Diaper daily breakdown missing | `views.py` + `utils.py` | 313-315 | 30 min |
+| 🟡 MINOR    | PDF table width/formatting     | `tasks.py`              | 126-248 | 10 min |
+
+---
+
+---
+
+## Detailed Implementation: Fixing Diaper Daily Breakdown
+
+### Current Data Structure
+
+```python
+# Current (WRONG): Breakdown is period-level only
+{
+    "daily_data": [
+        {
+            "date": "2026-02-01",
+            "count": 6,  # Total changes that day
+            "wet_count": 4,  # NEW: Need to add this
+            "dirty_count": 1,  # NEW: Need to add this
+            "both_count": 1,   # NEW: Need to add this
+        }
+    ],
+    "breakdown": {
+        "wet": 124,   # TOTAL for entire period
+        "dirty": 45,
+        "both": 32
     }
-
-# Endpoint
-class ExportPDFView(APIView):
-    def post(self, request, child_id):
-        task = generate_pdf_report.delay(child_id, request.user.id)
-        return Response({'task_id': task.id})
-
-class ExportStatusView(APIView):
-    def get(self, request, task_id):
-        task = AsyncResult(task_id)
-        return Response({
-            'status': task.status,
-            'result': task.result if task.successful() else None
-        })
+}
 ```
+
+### Required Changes
+
+#### 1. Update `back-end/analytics/utils.py`
+
+Modify `get_diaper_patterns()` to include per-day type breakdown:
+
+```python
+from django.db.models import Count, Q
+
+def get_diaper_patterns(child_id: int, days: int = 30) -> dict:
+    """Get diaper patterns with per-day type breakdown."""
+
+    # Existing code...
+
+    # For each day, get type breakdown
+    daily_data = []
+    for day_data in base_daily_data:
+        date = day_data['date']
+        total_count = day_data['count']
+
+        # Query this specific day for type breakdown
+        day_queryset = DiaperChange.objects.filter(
+            child_id=child_id,
+            created_at__date=date
+        )
+
+        type_breakdown = day_queryset.aggregate(
+            wet_count=Count('id', filter=Q(change_type='W')),
+            dirty_count=Count('id', filter=Q(change_type='D')),
+            both_count=Count('id', filter=Q(change_type='B')),
+        )
+
+        daily_data.append({
+            'date': str(date),
+            'count': total_count,
+            'wet_count': type_breakdown['wet_count'],
+            'dirty_count': type_breakdown['dirty_count'],
+            'both_count': type_breakdown['both_count'],
+        })
+
+    return {
+        'daily_data': daily_data,
+        'breakdown': period_breakdown,  # Existing
+    }
+```
+
+#### 2. Update CSV Export (`back-end/analytics/views.py`)
+
+```python
+@action(detail=True, methods=["post"], url_path="export-csv")
+def export_csv(self, request, pk=None):
+    # ... existing code ...
+
+    # Write data rows
+    for date in sorted(all_dates):
+        diaper = diaper_by_date.get(date, {})
+
+        writer.writerow([
+            date,
+            feeding.get("count", 0),
+            feeding.get("average_duration") or "",
+            feeding.get("total_oz") or "",
+            diaper.get("count", 0),
+            diaper.get("wet_count", 0),      # NOW PER-DAY
+            diaper.get("dirty_count", 0),    # NOW PER-DAY
+            diaper.get("both_count", 0),     # NOW PER-DAY
+            sleep.get("count", 0),
+            sleep.get("average_duration") or "",
+            sleep.get("total_minutes") or "",
+        ])
+```
+
+#### 3. Update PDF Export (`back-end/analytics/tasks.py`)
+
+```python
+# Diaper Patterns Section (line 156-203)
+diaper_rows = [["Date", "Total Changes", "Wet", "Dirty", "Both"]]
+for day_data in diaper_data.get("daily_data", [])[:10]:
+    diaper_rows.append([
+        str(day_data.get("date", "")),
+        str(day_data.get("count", 0)),
+        str(day_data.get("wet_count", 0)),      # NOW PER-DAY
+        str(day_data.get("dirty_count", 0)),    # NOW PER-DAY
+        str(day_data.get("both_count", 0)),     # NOW PER-DAY
+    ])
+
+# Breakdown summary (line 197-203)
+breakdown_text = (
+    f"Wet: {diaper_data.get('breakdown', {}).get('wet', 0)} | "
+    f"Dirty: {diaper_data.get('breakdown', {}).get('dirty', 0)} | "
+    f"Both: {diaper_data.get('breakdown', {}).get('both', 0)}"
+)
+story.append(Paragraph(breakdown_text, styles["Normal"]))
+```
+
+### Performance Consideration
+
+The per-day breakdown requires additional database queries:
+
+- **Current**: 1 aggregation query (date groups, type breakdown for entire period)
+- **New**: 1 + N queries (1 for dates, then 1 per day for type breakdown)
+
+**Optimization**: Cache the entire period's breakdown query result to avoid re-querying:
+
+```python
+def get_diaper_patterns(child_id: int, days: int = 30) -> dict:
+    # Single aggregation with date+type
+    daily_data = DiaperChange.objects.filter(
+        child_id=child_id,
+        created_at__gte=now() - timedelta(days=days)
+    ).annotate(
+        date=TruncDate('created_at')
+    ).values('date', 'change_type').annotate(
+        count=Count('id')
+    ).order_by('date', 'change_type')
+
+    # Pivot: date,type → date,{wet,dirty,both}
+    daily_by_date = {}
+    for row in daily_data:
+        date = row['date']
+        type_char = row['change_type']  # 'W', 'D', 'B'
+
+        if date not in daily_by_date:
+            daily_by_date[date] = {'date': str(date), 'count': 0}
+
+        if type_char == 'W':
+            daily_by_date[date]['wet_count'] = row['count']
+        elif type_char == 'D':
+            daily_by_date[date]['dirty_count'] = row['count']
+        elif type_char == 'B':
+            daily_by_date[date]['both_count'] = row['count']
+
+        daily_by_date[date]['count'] += row['count']
+
+    return {
+        'daily_data': sorted(daily_by_date.values(), key=lambda x: x['date']),
+        'breakdown': period_breakdown,  # Existing
+    }
+```
+
+This optimized version uses **1 aggregation query** instead of N+1.
 
 ---
 
@@ -673,12 +957,33 @@ private routes = [
 - ✅ Permission checks: role-based access (owner/co-parent/caregiver)
 - ✅ Completion date: February 11, 2026
 
-### Phase 2 (Export)
+### Phase 2 (Export) 🚧 IN PROGRESS - BLOCKED BY BUGS
 
-- ✅ CSV exports contain accurate data
-- ✅ PDF exports render charts and summaries
+#### Currently Implemented
+
+- ✅ CSV export endpoint (POST /api/v1/analytics/children/{id}/export-csv/)
+- ✅ CSV response structure with all dashboard data
+- ✅ PDF export task queuing (POST /api/v1/analytics/children/{id}/export-pdf/)
+- ✅ PDF status polling endpoint
+- ✅ ReportLab PDF layout with 3 sections (feeding, diaper, sleep)
+- ✅ 24-hour file expiration via storage cleanup
+
+#### Blocking Issues
+
+- ❌ **Permission check broken in PDF task** - Using wrong user ID
+- ❌ **Sleep PDF shows "—" for totals** - Using `total_oz` instead of `total_minutes`
+- ❌ **CSV diaper breakdown incorrect** - Shows period totals, not daily values
+- ❌ **PDF diaper table empty** - Same per-day breakdown issue
+
+#### Completion Criteria (After Fixes)
+
+- ✅ CSV contains accurate daily data for all activities (feedings, diapers w/ Wet/Dirty/Both, naps)
+- ✅ PDF contains same data as analytics dashboard
+- ✅ PDF generates without errors (permission + data field fixes)
 - ✅ Async jobs don't block API
 - ✅ Downloads available for 24 hours
+- ✅ Permission checks prevent unauthorized exports
+- ✅ All tests passing
 
 ---
 
@@ -717,7 +1022,7 @@ private routes = [
 
 ## Timeline & Effort Estimate
 
-### Phase 1 (COMPLETED)
+### Phase 1 (COMPLETED ✅)
 
 | Task                | Planned        | Actual         | Status      |
 | ------------------- | -------------- | -------------- | ----------- |
@@ -730,49 +1035,88 @@ private routes = [
 | **Total**           | **16-22 days** | **14-16 days** | **✅ Done** |
 | Completed           | —              | Feb 11, 2026   | ✅ Early    |
 
-### Phase 2 (NOT STARTED)
+### Phase 2 (IN PROGRESS 🚧 - BLOCKED BY BUGS)
 
-| Task                | Duration      | Status     |
-| ------------------- | ------------- | ---------- |
-| CSV export endpoint | 2-3 days      | 🚧 Pending |
-| PDF export (Celery) | 3-4 days      | 🚧 Pending |
-| Job polling UI      | 2-3 days      | 🚧 Pending |
-| Export tests        | 2-3 days      | 🚧 Pending |
-| **Total**           | **8-10 days** | 🚧 Pending |
+| Task                   | Status     | Notes                          |
+| ---------------------- | ---------- | ------------------------------ |
+| CSV export endpoint    | ✅ Done    | Implemented, needs bug fixes   |
+| CSV export validation  | 🚧 BLOCKED | Diaper daily breakdown missing |
+| PDF export (Celery)    | ✅ Done    | Implemented, needs bug fixes   |
+| PDF generation testing | 🚧 BLOCKED | Permission check broken        |
+| Job polling UI         | 🚧 Pending | Frontend export page partial   |
+| Integration tests      | 🚧 Pending | Need 15-20 test cases          |
+| **Current Phase Est.** | **5 days** | 1d bugs + 2d frontend + 2d QA  |
+
+**Bugs to Fix (Priority Order)**:
+
+1. Permission check in PDF task (5 min)
+2. Sleep column in PDF (2 min)
+3. Diaper daily breakdown in CSV/PDF (30 min)
+4. Frontend export page (2-3 days)
+5. Integration tests (2 days)
 
 ---
 
 ## Next Steps
 
-### Phase 1 Complete ✅
+### Phase 2 Unblocking (Immediate - 1 day)
 
-All infrastructure is in place:
+**Bug fixes required** (in priority order):
 
-- 5 REST API endpoints with caching and permissions
-- Full frontend service layer with TypeScript models
-- 3 chart components with comprehensive tests
-- 67 frontend tests + 26 backend tests (all passing)
-- Route registered and accessible at `/children/:childId/analytics`
+1. **Fix permission check in PDF task** (`back-end/analytics/tasks.py` line 48)
+    - Replace broken user check with actual user_id lookup
+    - Prevents unauthorized PDF generation
+    - **Effort**: 5 minutes
 
-### Ready for Phase 2
+2. **Fix sleep column in PDF** (`back-end/analytics/tasks.py` line 225)
+    - Change `total_oz` → `total_minutes`
+    - Prevents PDF build failure
+    - **Effort**: 2 minutes
 
-When prioritized, Phase 2 can begin with:
+3. **Implement per-day diaper breakdown** (`back-end/analytics/utils.py`)
+    - Modify aggregation functions to return daily type counts
+    - Update CSV and PDF to use per-day values
+    - Prevents inaccurate export data
+    - **Effort**: 30 minutes
 
-1. **Dependency addition**: Install export libraries
-    - Backend: `reportlab` (PDF), `python-csv` (CSV)
-    - Frontend: Notification UI for async job polling
+**After fixes**:
 
-2. **CSV Export Endpoint**:
-    - New `ExportCSVView` at `POST /api/v1/analytics/children/{id}/export/csv/`
-    - Inline response with CSV attachment
+- Run full test suite: `make test-backend`
+- Test CSV export: POST `/api/v1/analytics/children/1/export-csv/?days=30`
+- Test PDF export: POST `/api/v1/analytics/children/1/export-pdf/`
+- Verify file generation: `podman compose exec backend ls -la /path/to/exports/`
 
-3. **PDF Export (Async)**:
-    - New Celery task: `generate_pdf_report(child_id, user_id)`
-    - New `ExportPDFView` that queues task and returns `task_id`
-    - New `ExportStatusView` for job polling
-    - Frontend polling UI with download link when ready
+---
 
-4. **User Feedback**: Monthly demos to Dad (Michael) for Phase 2 requirements
+### Phase 2 Continuation (After Bugs Fixed - 3-4 days)
+
+1. **Frontend Export Page** (`front-end/poopyfeed/src/app/features/analytics/`)
+    - Export buttons on analytics dashboard
+    - CSV: Immediate download
+    - PDF: Polling dialog while generating
+    - Task status display with progress
+
+2. **Integration Tests**
+    - Backend: 15-20 test cases covering CSV/PDF with various data scenarios
+    - Frontend: Export button integration tests
+    - E2E: Full export workflow (button → file → download)
+
+3. **User Acceptance Testing**
+    - Verify exports match analytics dashboard exactly
+    - Test with small and large datasets (1-90 days)
+    - Confirm 24-hour expiration works
+
+---
+
+### Phase 3 (Future - Post MVP)
+
+When/if needed:
+
+- Real-time notifications when PDF ready
+- Batch exports (multiple children)
+- Email delivery integration
+- Advanced filtering (activity types, date ranges)
+- Materialized views for faster aggregations
 
 ---
 
