@@ -97,6 +97,21 @@ test-backend-quick:
 	@echo "Running back-end tests (ultra-fast, minimal output)..."
 	$(RUNTIME) compose exec backend python manage.py test --verbosity=0
 
+.PHONY: test-backend-parallel
+test-backend-parallel:
+	@echo "Running back-end tests with pytest parallel execution..."
+	$(RUNTIME) compose exec backend pytest -n 4 --dist loadscope -v
+
+.PHONY: test-backend-parallel-fast
+test-backend-parallel-fast:
+	@echo "Running back-end tests with pytest parallel (no coverage, fast)..."
+	$(RUNTIME) compose exec backend pytest -n 4 --dist loadscope -q --no-cov
+
+.PHONY: test-backend-parallel-auto
+test-backend-parallel-auto:
+	@echo "Running back-end tests with pytest parallel (auto-detect cores)..."
+	$(RUNTIME) compose exec backend pytest -n auto --dist loadscope -v
+
 .PHONY: shell-backend
 shell-backend:
 	$(RUNTIME) compose exec backend python manage.py shell
