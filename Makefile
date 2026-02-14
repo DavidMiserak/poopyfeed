@@ -89,7 +89,12 @@ test-backend:
 	@echo "Use case: CI/CD pipeline + full coverage verification"
 	@echo "======================================"
 	$(RUNTIME) compose exec backend coverage run manage.py test
+	$(RUNTIME) compose exec backend coverage xml
 	$(RUNTIME) compose exec backend coverage report
+	@echo ""
+	@echo "Coverage reports generated:"
+	@echo "  - back-end/coverage.xml (for SonarQube)"
+	@echo "  - Run: cd back-end && sonar-scanner"
 
 .PHONY: test-backend-fast
 test-backend-fast:
