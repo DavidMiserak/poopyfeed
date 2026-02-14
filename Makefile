@@ -83,9 +83,19 @@ migrate:
 
 .PHONY: test-backend
 test-backend:
-	@echo "Running back-end tests..."
+	@echo "Running back-end tests with coverage..."
 	$(RUNTIME) compose exec backend coverage run manage.py test
 	$(RUNTIME) compose exec backend coverage report
+
+.PHONY: test-backend-fast
+test-backend-fast:
+	@echo "Running back-end tests (fast, no coverage)..."
+	$(RUNTIME) compose exec backend python manage.py test --verbosity=2
+
+.PHONY: test-backend-quick
+test-backend-quick:
+	@echo "Running back-end tests (ultra-fast, minimal output)..."
+	$(RUNTIME) compose exec backend python manage.py test --verbosity=0
 
 .PHONY: shell-backend
 shell-backend:
