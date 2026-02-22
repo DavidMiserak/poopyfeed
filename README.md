@@ -44,11 +44,15 @@ patterns. Built with Django 6.0 (backend) and Angular 21 (frontend).
 | ---------------------------------------------------- | ------------------------------------------------------- |
 | ![Add Child](images/mobile-screenshots/add-baby.png) | ![Child List](images/mobile-screenshots/child-list.png) |
 
-### Dashboard & Tracking
+### Dashboard Sections
 
-| Dashboard                                             |
-| ----------------------------------------------------- |
-| ![Dashboard](images/mobile-screenshots/dashboard.png) |
+| Last Activity                                                        | Quick Log                                                    | Summary Counts                                           |
+| -------------------------------------------------------------------- | ------------------------------------------------------------ | -------------------------------------------------------- |
+| ![Last Activity](images/mobile-screenshots/dash-1-last-activity.png) | ![Quick Log](images/mobile-screenshots/dash-2-quick-log.png) | ![Summary](images/mobile-screenshots/dash-3-summary.png) |
+
+| Action Buttons                                           | Recent Activity Feed                                                     | Logs & Sharing                                                       |
+| -------------------------------------------------------- | ------------------------------------------------------------------------ | -------------------------------------------------------------------- |
+| ![Actions](images/mobile-screenshots/dash-4-actions.png) | ![Recent Activity](images/mobile-screenshots/dash-5-recent-activity.png) | ![Logs & Sharing](images/mobile-screenshots/dash-6-logs-sharing.png) |
 
 ### More Features
 
