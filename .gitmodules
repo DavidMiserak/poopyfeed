@@ -4,3 +4,6 @@
 [submodule "front-end"]
 	path = front-end
 	url = git@github.com:DavidMiserak/poopyfeed-fe.git
+[submodule "android"]
+	path = android
+	url = git@github.com:DavidMiserak/poopyfeed-android.git
