@@ -27,6 +27,46 @@ patterns. Built with Django 6.0 (backend) and Angular 21 (frontend).
 - **Role-based access**: Owner, co-parent, and caregiver roles
 - **REST API**: Token-authenticated API for frontend and mobile apps
 - **PWA ready**: Progressive Web App capabilities
+- **Analytics**: Visualize feeding, diaper, and sleep trends
+- **Data Export**: Export data as CSV or PDF
+
+## Screenshots
+
+### Authentication
+
+| Sign Up                                           | Log In                                          |
+| ------------------------------------------------- | ----------------------------------------------- |
+| ![Sign Up](images/mobile-screenshots/sign-up.png) | ![Log In](images/mobile-screenshots/log-in.png) |
+
+### Child Management
+
+| Add Child                                            | Child List                                              |
+| ---------------------------------------------------- | ------------------------------------------------------- |
+| ![Add Child](images/mobile-screenshots/add-baby.png) | ![Child List](images/mobile-screenshots/child-list.png) |
+
+### Dashboard & Tracking
+
+| Dashboard                                             | Feeding Log                                               | Diaper Log                                              |
+| ----------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------- |
+| ![Dashboard](images/mobile-screenshots/dashboard.png) | ![Feeding Log](images/mobile-screenshots/feeding-log.png) | ![Diaper Log](images/mobile-screenshots/diaper-log.png) |
+
+### More Features
+
+| Nap Log                                           | Analytics                                             | Sharing                                           |
+| ------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------- |
+| ![Nap Log](images/mobile-screenshots/nap-log.png) | ![Analytics](images/mobile-screenshots/analytics.png) | ![Sharing](images/mobile-screenshots/sharing.png) |
+
+### Data Export
+
+| Export to CSV                                           | Export to PDF                                           |
+| ------------------------------------------------------- | ------------------------------------------------------- |
+| ![Export CSV](images/mobile-screenshots/export-csv.png) | ![Export PDF](images/mobile-screenshots/export-pdf.png) |
+
+### Catch-Up Activity
+
+| Step 1                                                       | Step 2                                                         | Step 3                                                         |
+| ------------------------------------------------------------ | -------------------------------------------------------------- | -------------------------------------------------------------- |
+| ![Catch Up Step 1](images/mobile-screenshots/catch-up-1.png) | ![Catch Up Step 2](images/mobile-screenshots/catch-up-2.0.png) | ![Catch Up Step 3](images/mobile-screenshots/catch-up-3.0.png) |
 
 ## Quick Start
 
