@@ -46,15 +46,15 @@ patterns. Built with Django 6.0 (backend) and Angular 21 (frontend).
 
 ### Dashboard & Tracking
 
-| Dashboard                                             | Feeding Log                                               | Diaper Log                                              |
-| ----------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------- |
-| ![Dashboard](images/mobile-screenshots/dashboard.png) | ![Feeding Log](images/mobile-screenshots/feeding-log.png) | ![Diaper Log](images/mobile-screenshots/diaper-log.png) |
+| Dashboard                                             |
+| ----------------------------------------------------- |
+| ![Dashboard](images/mobile-screenshots/dashboard.png) |
 
 ### More Features
 
-| Nap Log                                           | Analytics                                             | Sharing                                           |
-| ------------------------------------------------- | ----------------------------------------------------- | ------------------------------------------------- |
-| ![Nap Log](images/mobile-screenshots/nap-log.png) | ![Analytics](images/mobile-screenshots/analytics.png) | ![Sharing](images/mobile-screenshots/sharing.png) |
+| Analytics                                             | Sharing                                           |
+| ----------------------------------------------------- | ------------------------------------------------- |
+| ![Analytics](images/mobile-screenshots/analytics.png) | ![Sharing](images/mobile-screenshots/sharing.png) |
 
 ### Data Export
 
@@ -67,6 +67,12 @@ patterns. Built with Django 6.0 (backend) and Angular 21 (frontend).
 | Step 1                                                       | Step 2                                                         | Step 3                                                         |
 | ------------------------------------------------------------ | -------------------------------------------------------------- | -------------------------------------------------------------- |
 | ![Catch Up Step 1](images/mobile-screenshots/catch-up-1.png) | ![Catch Up Step 2](images/mobile-screenshots/catch-up-2.0.png) | ![Catch Up Step 3](images/mobile-screenshots/catch-up-3.0.png) |
+
+### Logs
+
+| Nap Log                                           | Feeding Log                                               | Diaper Log                                              |
+| ------------------------------------------------- | --------------------------------------------------------- | ------------------------------------------------------- |
+| ![Nap Log](images/mobile-screenshots/nap-log.png) | ![Feeding Log](images/mobile-screenshots/feeding-log.png) | ![Diaper Log](images/mobile-screenshots/diaper-log.png) |
 
 ## Quick Start
 
