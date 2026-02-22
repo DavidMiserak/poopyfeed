@@ -26,6 +26,11 @@ help:
 	@echo "make shell-frontend            - Front-end container shell"
 	@echo "make build-frontend            - Build production front-end"
 	@echo ""
+	@echo "Android Commands:"
+	@echo "make build-android    - Build Android debug APK in container"
+	@echo "make test-android     - Run Android unit tests in container"
+	@echo "make lint-android     - Run Android lint checks in container"
+	@echo ""
 	@echo "Redis & Celery Commands:"
 	@echo "make redis-cli         - Open Redis CLI"
 	@echo "make redis-flush       - Clear all Redis data (WARNING: also clears sessions)"
@@ -187,6 +192,8 @@ pre-commit-setup:
 	cd back-end && $(MAKE) pre-commit-setup
 	@echo "Installing pre-commit hooks in front-end..."
 	cd front-end && $(MAKE) pre-commit-setup
+	@echo "Installing pre-commit hooks in android..."
+	cd android && $(MAKE) pre-commit-setup
 	@echo "Pre-commit hooks installed!"
 
 # Redis and Celery Commands
@@ -212,3 +219,28 @@ celery-worker:
 .PHONY: celery-beat
 celery-beat:
 	$(RUNTIME) compose exec backend celery -A django_project beat -l info
+
+# Android commands (on-demand builds via compose profile)
+.PHONY: build-android
+build-android:
+	@echo "Building Android debug APK..."
+	$(RUNTIME) compose --profile android build android
+	$(RUNTIME) compose --profile android run --rm android assembleDebug --no-daemon
+
+.PHONY: test-android
+test-android:
+	@echo "Running Android unit tests..."
+	$(RUNTIME) compose --profile android build android
+	$(RUNTIME) compose --profile android run --rm android test --no-daemon
+
+.PHONY: test-android-coverage
+test-android-coverage:
+	@echo "Running Android unit tests with coverage..."
+	$(RUNTIME) compose --profile android build android
+	$(RUNTIME) compose --profile android run --rm android jacocoTestReport --no-daemon
+
+.PHONY: lint-android
+lint-android:
+	@echo "Running Android lint checks..."
+	$(RUNTIME) compose --profile android build android
+	$(RUNTIME) compose --profile android run --rm android lint --no-daemon

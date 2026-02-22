@@ -124,6 +124,18 @@ services:
         networks:
             - poopyfeed-network
 
+    # Android build toolchain (on-demand, not started with `make run`)
+    android:
+        image: ${REGISTRY:-localhost}/${ANDROID_IMAGE:-poopyfeed-android}:${IMAGE_TAG:-latest}
+        container_name: poopyfeed-android
+        build:
+            context: ./android
+            dockerfile: Containerfile
+        profiles:
+            - android
+        networks:
+            - poopyfeed-network
+
 networks:
     poopyfeed-network:
         driver: bridge
