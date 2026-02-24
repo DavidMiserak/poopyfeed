@@ -30,6 +30,7 @@ help:
 	@echo "make build-android    - Build Android debug APK in container"
 	@echo "make test-android     - Run Android unit tests in container"
 	@echo "make lint-android     - Run Android lint checks in container"
+	@echo "make format-android   - Format Kotlin code"
 	@echo ""
 	@echo "Redis & Celery Commands:"
 	@echo "make redis-cli         - Open Redis CLI"
@@ -244,3 +245,8 @@ lint-android:
 	@echo "Running Android lint checks..."
 	$(RUNTIME) compose --profile android build android
 	$(RUNTIME) compose --profile android run --rm android lint --no-daemon
+
+.PHONY: format-android
+format-android:
+	@echo "Formatting Android Kotlin code..."
+	cd android && make format
