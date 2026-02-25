@@ -107,10 +107,10 @@ This specification defines requirements for bringing the Android app to feature 
 - [x] ExportScreen: format (CSV/PDF), days (7/14/30), Export button; FileProvider for opening files
 - [x] Link "Export data" from child dashboard
 
-### Phase 4: Optional (not implemented)
+### Phase 4: Optional (partially implemented)
 
-- [ ] Catch-up mode screen (quick sequential logging)
-- [ ] Child timeline screen (chronological activity list)
+- [x] Catch-up mode screen (quick sequential logging)
+- [x] Child timeline screen (chronological activity list)
 - [ ] Account settings parity (e.g. change password)
 - [ ] Design system alignment (colors, typography from docs)
 
