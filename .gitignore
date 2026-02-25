@@ -44,7 +44,7 @@ htmlcov/
 .nyc_output/
 
 # Lighthouse reports
-lighthouse-report*
+lighthouse*
 
 # Temporary files
 tmp/
