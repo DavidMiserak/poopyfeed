@@ -57,3 +57,4 @@ temp/
 # AI generated files
 CLAUDE.md
 memory/
+.cursor/
