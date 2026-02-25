@@ -2,6 +2,8 @@
 # Root Makefile for PoopyFeed - orchestrates both front-end and back-end
 
 RUNTIME := podman  # podman or docker
+ROOT := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))
+E2E_DIR := $(ROOT)front-end/poopyfeed
 
 .PHONY: help
 help:
@@ -193,12 +195,12 @@ test-e2e-local:
 	@echo "Running E2E tests on host (Firefox, localhost:4200)"
 	@echo "Prerequisite: make run; run make test-e2e-install once"
 	@echo "======================================"
-	cd front-end/poopyfeed && npm run test:e2e
+	cd $(E2E_DIR) && npm run test:e2e
 
 .PHONY: test-e2e-install
 test-e2e-install:
 	@echo "Installing E2E deps and Playwright Firefox (run once for test-e2e-local)..."
-	cd front-end/poopyfeed && npm install && npx playwright install firefox
+	cd $(E2E_DIR) && npm install && npx playwright install firefox
 
 # Development setup
 .PHONY: setup
