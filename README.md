@@ -82,9 +82,11 @@ patterns. Built with Django 6.0 (backend) and Angular 21 (frontend).
 
 ### Prerequisites
 
-- Podman (recommended) or Docker
-- Make
-- Git
+- **Podman** (recommended) or **Docker**
+- **Make**
+- **Git**
+
+To use Docker instead of Podman, set `RUNTIME=docker` in the root `Makefile` or use Docker Compose directly.
 
 ### Installation
 
@@ -94,7 +96,10 @@ git clone <repo-url>
 cd poopyfeed
 git submodule update --init --recursive
 
-# Start all services (frontend + backend + database)
+# First-time setup (install hooks, build images)
+make setup
+
+# Start all services (frontend, backend, database, Redis, Celery worker)
 make run
 ```
 
@@ -110,7 +115,7 @@ make run
 # Run database migrations
 make migrate
 
-# Create admin user
+# Create an admin user
 make createsuperuser
 ```
 
@@ -118,25 +123,26 @@ make createsuperuser
 
 ```text
 poopyfeed/
-├── front-end/          # Angular 21 frontend
-│   ├── poopyfeed/     # Angular application
-│   ├── Containerfile  # Multi-stage Docker build
-│   ├── Makefile       # Frontend commands
-│   └── CLAUDE.md      # Frontend architecture guide
-├── back-end/          # Django 6.0 backend
+├── front-end/           # Angular 21 frontend (submodule)
+│   ├── poopyfeed/       # Angular application
+│   ├── Containerfile    # Multi-stage Docker build
+│   ├── Makefile         # Frontend commands
+│   └── CLAUDE.md        # Frontend architecture guide
+├── back-end/            # Django 6.0 backend (submodule)
 │   ├── django_project/  # Django settings
-│   ├── accounts/      # User management
-│   ├── children/      # Child profiles & sharing
-│   ├── diapers/       # Diaper tracking
-│   ├── feedings/      # Feeding tracking
-│   ├── naps/          # Nap tracking
-│   ├── Containerfile  # Django container
-│   ├── Makefile       # Backend commands
-│   └── CLAUDE.md      # Backend architecture guide
-├── podman-compose.yaml  # Orchestration for all services
-├── Makefile           # Root commands
-├── DEPLOYMENT.md      # Full deployment guide
-└── README.md          # This file
+│   ├── accounts/        # User management
+│   ├── children/        # Child profiles & sharing
+│   ├── diapers/         # Diaper tracking
+│   ├── feedings/        # Feeding tracking
+│   ├── naps/            # Nap tracking
+│   ├── Containerfile    # Django container
+│   ├── Makefile         # Backend commands
+│   └── CLAUDE.md        # Backend architecture guide
+├── docs/                # Design and persona documentation
+├── podman-compose.yaml  # Orchestration (frontend, backend, db, Redis, Celery)
+├── Makefile             # Root commands
+├── DEPLOYMENT.md        # Full deployment guide
+└── README.md            # This file
 ```
 
 ## Development
@@ -146,11 +152,17 @@ poopyfeed/
 ```bash
 make run              # Start all services
 make stop             # Stop all services
+make restart          # Stop and start
 make logs             # View all logs
-make test-backend     # Run Django tests
-make test-frontend    # Run Angular tests
+make logs-backend     # Backend logs only
+make logs-frontend    # Frontend logs only
 make migrate          # Run database migrations
+make test-backend     # Run Django tests (with coverage)
+make test-frontend    # Run Vitest tests
+make clean            # Stop and remove volumes
 ```
+
+Optional: `make redis-cli`, `make celery-worker`, `make celery-beat` for Redis/Celery inspection or running the scheduler.
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for complete documentation.
 
@@ -159,6 +171,8 @@ See [DEPLOYMENT.md](DEPLOYMENT.md) for complete documentation.
 - **Frontend**: Angular 21 (standalone components, signals, SSR)
 - **Backend**: Django 6.0 + Django REST Framework
 - **Database**: PostgreSQL 14
+- **Redis**: Cache, sessions, Celery broker (started with `make run`)
+- **Celery**: Background tasks (e.g. PDF export); worker runs with `make run`
 - **Authentication**: django-allauth (email-based) + Token auth (API)
 - **Styling**: Tailwind CSS v4
 - **Testing**: Vitest (frontend), Django TestCase (backend)
@@ -200,10 +214,10 @@ make run  # Uses podman-compose.yaml
 ## Testing
 
 ```bash
-# Backend tests (99% coverage)
+# Backend tests (98%+ coverage, 280+ tests)
 make test-backend
 
-# Frontend tests
+# Frontend tests (Vitest)
 make test-frontend
 ```
 
@@ -226,6 +240,8 @@ make pre-commit-setup  # Install hooks
 - **[back-end/CLAUDE.md](back-end/CLAUDE.md)** - Django architecture
 - **[front-end/CLAUDE.md](front-end/CLAUDE.md)** - Angular architecture
 - **[front-end/docs/API.md](front-end/docs/API.md)** - REST API reference
+- **[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** - Design system
+- **docs/personas/** - User personas (mom, dad, caretaker)
 
 ## Technology Stack
 
@@ -236,6 +252,8 @@ make pre-commit-setup  # Install hooks
 - Djoser (API auth)
 - django-allauth (web auth)
 - PostgreSQL 14
+- Redis (cache, sessions, Celery broker)
+- Celery (background tasks)
 - Python 3.13
 
 **Frontend:**
@@ -248,7 +266,8 @@ make pre-commit-setup  # Install hooks
 
 **DevOps:**
 
-- Podman/Docker
+- Podman (default) or Docker
+- Compose orchestration
 - Multi-stage containers
 - Pre-commit hooks
 - Make automation
