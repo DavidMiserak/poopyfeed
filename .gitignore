@@ -43,6 +43,9 @@ coverage/
 htmlcov/
 .nyc_output/
 
+# Lighthouse reports
+lighthouse-report*
+
 # Temporary files
 tmp/
 temp/
