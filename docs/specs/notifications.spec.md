@@ -88,7 +88,7 @@ When the user opens account settings, the system shall display a Notifications s
 ### Security
 
 - All notification, preference, and quiet-hours endpoints require authentication (Token/session).
-- Users may only read/update their own notifications, preferences, and quiet hours; access to another user’s notification returns 403.
+- Users may only read/update their own notifications, preferences, and quiet hours; access to another user’s notification or preference returns 404 Not Found (no information leakage).
 
 ### Data
 
@@ -150,7 +150,7 @@ Then that notification is marked read and the updated notification is returned.
 **AC-009: Cannot access other user’s notification**
 Given user B has a notification with id N
 When user A calls PATCH `/api/v1/notifications/N/`
-Then the system returns 403 Forbidden
+Then the system returns 404 Not Found
 And user B’s notification is unchanged.
 
 **AC-010: Preferences auto-created**
@@ -195,18 +195,15 @@ And the UI reflects the new state.
 
 ## Error Handling
 
-| Condition                                                | HTTP | User-facing / behavior                                   |
-| -------------------------------------------------------- | ---- | -------------------------------------------------------- |
-| Unauthenticated request to any notification endpoint     | 401  | Require login (standard auth flow).                      |
-| User attempts to read/update another user’s notification | 403  | “You don’t have permission to access this notification.” |
-| User attempts to update another user’s preference        | 403  | “You don’t have permission to modify this preference.”   |
-| Notification ID not found or not owned by user           | 404  | “Notification not found.”                                |
-| Preference ID not found or not owned by user             | 404  | “Preference not found.”                                  |
-| POST to create notification (direct)                     | 405  | “Method not allowed.”                                    |
-| Invalid quiet hours payload (e.g. invalid time)          | 400  | Validation errors per field (Django/DRF).                |
-| Invalid preference payload                               | 400  | Validation errors per field.                             |
-| Polling GET unread-count fails (network/5xx)             | —    | Silent (no toast); retry on next poll.                   |
-| Explicit list/mark-read/preferences call fails           | —    | Show error (e.g. toast) per app error handling.          |
+| Condition                                            | HTTP | User-facing / behavior                          |
+| ---------------------------------------------------- | ---- | ----------------------------------------------- |
+| Unauthenticated request to any notification endpoint | 401  | Require login (standard auth flow).             |
+| Notification or preference not found or not owned     | 404  | “Notification not found.” / “Preference not found.” |
+| POST to create notification (direct)                 | 405  | “Method not allowed.”                           |
+| Invalid quiet hours payload (e.g. invalid time)       | 400  | Validation errors per field (Django/DRF).       |
+| Invalid preference payload                           | 400  | Validation errors per field.                    |
+| Polling GET unread-count fails (network/5xx)          | —    | Silent (no toast); retry on next poll.          |
+| Explicit list/mark-read/preferences call fails       | —    | Show error (e.g. toast) per app error handling.|
 
 ---
 
@@ -238,7 +235,7 @@ And the UI reflects the new state.
 
 ### Verification
 
-- [ ] Backend: `make migrate`, `make test-backend-parallel-fast`, manual two-user notification check
+- [x] Backend: `make migrate`, `make test-backend-parallel-fast`, manual two-user notification check
 - [ ] Frontend: `make test-frontend`, `make build-frontend`, manual polling and bell flow
 - [ ] E2E: `make test-e2e` (existing tests pass after header change)
 
@@ -262,6 +259,7 @@ And the UI reflects the new state.
 - **Event type mapping**: `Feeding` → `feeding`, `DiaperChange` → `diaper`, `Nap` → `nap`.
 - **Recipients**: `child.parent_id` ∪ `ChildShare.user_id` for that child, minus `actor_id`.
 - **Quiet hours**: `QuietHours.is_quiet_now()` uses `CustomUser.timezone` and supports overnight ranges (e.g. 22:00–07:00).
+- **Authorization**: Notification and preference views filter by `recipient`/`user`; requests for another user’s resource yield 404 (not 403) to avoid leaking existence.
 
 ### API base path
 
