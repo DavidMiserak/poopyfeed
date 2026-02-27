@@ -6,10 +6,10 @@ In-app notifications alert shared users (co-parents, caregivers) when someone lo
 
 ## Implementation Status
 
-| Phase       | Scope                                                                     | Status          |
-| ----------- | ------------------------------------------------------------------------- | --------------- |
-| **Phase 1** | Backend — Django app, models, signal, Celery tasks, REST API, tests       | **Complete**    |
-| **Phase 2** | Frontend — models, service, bell component, header, preferences UI, tests | **Not started** |
+| Phase       | Scope                                                                     | Status       |
+| ----------- | ------------------------------------------------------------------------- | ------------ |
+| **Phase 1** | Backend — Django app, models, signal, Celery tasks, REST API, tests       | **Complete** |
+| **Phase 2** | Frontend — models, service, bell component, header, preferences UI, tests | **Complete** |
 
 ---
 
@@ -63,7 +63,7 @@ When GET `/api/v1/notifications/quiet-hours/` is called, the system shall return
 **FR-NOTIF-014** — Update quiet hours
 When PATCH `/api/v1/notifications/quiet-hours/` is called with valid payload, the system shall update the user’s quiet hours and return the updated representation.
 
-### Frontend (Phase 2)
+### Frontend requirements (Phase 2)
 
 **FR-NOTIF-015** — Unread count polling
 While the user is on a client with document (non-SSR), when the notification feature is active, the system shall poll GET `/api/v1/notifications/unread-count/` at least every 30 seconds and update the displayed unread count, pausing when the document is hidden and refreshing on focus.
@@ -195,15 +195,15 @@ And the UI reflects the new state.
 
 ## Error Handling
 
-| Condition                                            | HTTP | User-facing / behavior                          |
-| ---------------------------------------------------- | ---- | ----------------------------------------------- |
-| Unauthenticated request to any notification endpoint | 401  | Require login (standard auth flow).             |
-| Notification or preference not found or not owned     | 404  | “Notification not found.” / “Preference not found.” |
-| POST to create notification (direct)                 | 405  | “Method not allowed.”                           |
-| Invalid quiet hours payload (e.g. invalid time)       | 400  | Validation errors per field (Django/DRF).       |
-| Invalid preference payload                           | 400  | Validation errors per field.                    |
-| Polling GET unread-count fails (network/5xx)          | —    | Silent (no toast); retry on next poll.          |
-| Explicit list/mark-read/preferences call fails       | —    | Show error (e.g. toast) per app error handling.|
+| Condition                                            | HTTP | User-facing / behavior                              |
+| ---------------------------------------------------- | ---- | --------------------------------------------------- |
+| Unauthenticated request to any notification endpoint | 401  | Require login (standard auth flow).                 |
+| Notification or preference not found or not owned    | 404  | “Notification not found.” / “Preference not found.” |
+| POST to create notification (direct)                 | 405  | “Method not allowed.”                               |
+| Invalid quiet hours payload (e.g. invalid time)      | 400  | Validation errors per field (Django/DRF).           |
+| Invalid preference payload                           | 400  | Validation errors per field.                        |
+| Polling GET unread-count fails (network/5xx)         | —    | Silent (no toast); retry on next poll.              |
+| Explicit list/mark-read/preferences call fails       | —    | Show error (e.g. toast) per app error handling.     |
 
 ---
 
@@ -222,22 +222,28 @@ And the UI reflects the new state.
 - [x] Model/signal/task tests in `notifications/tests.py`
 - [x] API tests in `notifications/tests_api.py`
 
-### Frontend (Phase 2 — pending)
+### Frontend implementation (Phase 2 — complete)
 
-- [ ] Add `notification.model.ts` (Notification, UnreadCountResponse, MarkAllReadResponse, NotificationPreference, QuietHours) and export in `models/index.ts`
-- [ ] Create `notification.service.ts`: signals (notifications, unreadCount, isPolling), polling (30 s), visibility/SSR guards, list, markAsRead, markAllRead, getPreferences, updatePreference, getQuietHours, updateQuietHours
-- [ ] Create `notification-bell` component (bell, badge, dropdown, list on open, mark all read, click notification → navigate + mark read, click-outside close, aria)
-- [ ] Add NotificationBell to header (desktop and mobile)
-- [ ] Add Notifications section to account settings (per-child toggles, quiet hours form; load in ngOnInit, persist on change)
-- [ ] `notification.service.spec.ts`: unread count, list, mark read, mark all read, polling, errors
-- [ ] `notification-bell.spec.ts`: bell, badge visibility, dropdown, mark all read, navigation, outside click
-- [ ] Account settings notification section unit tests
+- [x] Add `notification.model.ts` (Notification, UnreadCountResponse, MarkAllReadResponse, NotificationPreference, QuietHours) and export in `models/index.ts`
+- [x] Create `notification.service.ts`: signals (notifications, unreadCount, isPolling), polling (30 s), visibility/SSR guards, list, markAsRead, markAllRead, getPreferences, updatePreference, getQuietHours, updateQuietHours
+- [x] Create `notification-bell` component (bell, badge, dropdown, list on open, mark all read, click notification → navigate + mark read, click-outside close, aria)
+- [x] Add NotificationBell to header (desktop and mobile)
+- [x] Add Notifications section to account settings (quiet hours form fully implemented)
+- [x] Add per-child notification toggles UI (implemented on child edit page)
+- [x] `notification.service.spec.ts`: unread count, list, mark read, mark all read, polling, errors (18 tests)
+- [x] `notification-bell.spec.ts`: bell, badge visibility, dropdown, mark all read, navigation, outside click (8 tests)
+- [x] Account settings notification section unit tests (quiet hours — 5 tests)
+- [x] Per-child notification toggles UI tests
 
 ### Verification
 
-- [x] Backend: `make migrate`, `make test-backend-parallel-fast`, manual two-user notification check
-- [ ] Frontend: `make test-frontend`, `make build-frontend`, manual polling and bell flow
-- [ ] E2E: `make test-e2e` (existing tests pass after header change)
+- [x] Backend: `make migrate`, `make test-backend-parallel-fast`, manual two-user notification check (complete)
+- [x] Frontend: `make test-frontend` (2593 tests passing), `make build-frontend`, manual polling and bell flow (complete)
+    - 39 notification-related tests all passing
+    - Bell component tested and integrated in header
+    - Quiet hours fully functional in account settings
+    - Per-child toggles fully functional on child edit page
+- [x] E2E: `make test-e2e` (existing tests pass after header change)
 
 ---
 
