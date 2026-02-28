@@ -266,7 +266,7 @@ The batch endpoint shall accept:
             "type": "feeding",
             "data": {
                 "feeding_type": "bottle",
-                "fed_at": "2026-02-17T10:00:00Z",
+                "fed_at": "2024-02-17T10:00:00Z",
                 "amount_oz": 4.0
             }
         },
@@ -274,14 +274,14 @@ The batch endpoint shall accept:
             "type": "diaper",
             "data": {
                 "change_type": "wet",
-                "changed_at": "2026-02-17T10:25:00Z"
+                "changed_at": "2024-02-17T10:25:00Z"
             }
         },
         {
             "type": "nap",
             "data": {
-                "napped_at": "2026-02-17T10:30:00Z",
-                "ended_at": "2026-02-17T11:30:00Z"
+                "napped_at": "2024-02-17T10:30:00Z",
+                "ended_at": "2024-02-17T11:30:00Z"
             }
         }
     ]

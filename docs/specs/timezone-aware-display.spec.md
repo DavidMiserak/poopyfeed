@@ -97,7 +97,7 @@ The system shall remove the deprecated `isToday()` function from `date.utils.ts`
 
 Given a user whose profile timezone is "America/New_York"
 And their browser timezone is "America/Los_Angeles"
-When they view a feeding logged at 2026-02-25T18:00:00Z
+When they view a feeding logged at 2024-02-25T18:00:00Z
 Then the time displays as "1:00 PM" (Eastern), not "10:00 AM" (Pacific)
 
 ### AC-TZ-002: Form Inputs Use Preferred Timezone
@@ -143,7 +143,7 @@ Then no mismatch banner appears
 ### AC-TZ-007: Timeline Day Grouping Uses Preferred Timezone
 
 Given a user in "America/New_York" (UTC-5)
-And a feeding logged at 2026-02-26T03:00:00Z (10:00 PM Feb 25 Eastern)
+And a feeding logged at 2024-02-26T03:00:00Z (10:00 PM Feb 25 Eastern)
 When viewing the timeline
 Then the feeding appears under "February 25" (not February 26)
 

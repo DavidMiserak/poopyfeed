@@ -31,7 +31,7 @@ validation, no events are created (transaction rollback).
             "type": "feeding",
             "data": {
                 "feeding_type": "bottle",
-                "fed_at": "2026-02-17T10:00:00Z",
+                "fed_at": "2024-02-17T10:00:00Z",
                 "amount_oz": 4.0
             }
         },
@@ -39,14 +39,14 @@ validation, no events are created (transaction rollback).
             "type": "diaper",
             "data": {
                 "change_type": "wet",
-                "changed_at": "2026-02-17T10:25:00Z"
+                "changed_at": "2024-02-17T10:25:00Z"
             }
         },
         {
             "type": "nap",
             "data": {
-                "napped_at": "2026-02-17T10:30:00Z",
-                "ended_at": "2026-02-17T11:30:00Z"
+                "napped_at": "2024-02-17T10:30:00Z",
+                "ended_at": "2024-02-17T11:30:00Z"
             }
         }
     ]
@@ -62,32 +62,32 @@ validation, no events are created (transaction rollback).
             "type": "feeding",
             "id": 42,
             "feeding_type": "bottle",
-            "fed_at": "2026-02-17T10:00:00Z",
+            "fed_at": "2024-02-17T10:00:00Z",
             "amount_oz": "4.0",
             "duration_minutes": null,
             "side": "",
             "feeding_type_display": "Bottle",
             "side_display": "",
-            "created_at": "2026-02-17T12:00:00Z",
-            "updated_at": "2026-02-17T12:00:00Z"
+            "created_at": "2024-02-17T12:00:00Z",
+            "updated_at": "2024-02-17T12:00:00Z"
         },
         {
             "type": "diaper",
             "id": 15,
             "change_type": "wet",
-            "changed_at": "2026-02-17T10:25:00Z",
+            "changed_at": "2024-02-17T10:25:00Z",
             "change_type_display": "Wet",
-            "created_at": "2026-02-17T12:00:00Z",
-            "updated_at": "2026-02-17T12:00:00Z"
+            "created_at": "2024-02-17T12:00:00Z",
+            "updated_at": "2024-02-17T12:00:00Z"
         },
         {
             "type": "nap",
             "id": 8,
-            "napped_at": "2026-02-17T10:30:00Z",
-            "ended_at": "2026-02-17T11:30:00Z",
+            "napped_at": "2024-02-17T10:30:00Z",
+            "ended_at": "2024-02-17T11:30:00Z",
             "duration_minutes": 60.0,
-            "created_at": "2026-02-17T12:00:00Z",
-            "updated_at": "2026-02-17T12:00:00Z"
+            "created_at": "2024-02-17T12:00:00Z",
+            "updated_at": "2024-02-17T12:00:00Z"
         }
     ],
     "count": 3
@@ -540,7 +540,7 @@ curl -X POST http://localhost:8000/api/v1/children/1/batch/ \
         "type": "feeding",
         "data": {
           "feeding_type": "bottle",
-          "fed_at": "2026-02-17T10:00:00Z",
+          "fed_at": "2024-02-17T10:00:00Z",
           "amount_oz": 4.0
         }
       }
