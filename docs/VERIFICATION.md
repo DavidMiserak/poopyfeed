@@ -151,20 +151,13 @@ The following gaps from the original audit are now covered:
 | Timeline view (7-day, nav, activity)                | Dad            | `e2e/timeline.e2e.spec.ts`                         |
 | Keyboard navigation (child list cards, Enter/Space) | Accessibility  | `e2e/keyboard-navigation.e2e.spec.ts`              |
 | Quiet hours settings page (view and save)           | All            | `e2e/quiet-hours.e2e.spec.ts`                      |
+| PDF export (async job, poll until ready + download) | Dad            | `e2e/analytics.e2e.spec.ts`                        |
 
 <!-- markdownlint-enable MD060 -->
 
 ### Remaining E2E gaps
 
-<!-- markdownlint-disable MD060 -->
-
-| Gap                               | Persona impact |
-| --------------------------------- | -------------- |
-| PDF export (async job + download) | Dad            |
-
-<!-- markdownlint-enable MD060 -->
-
-These remaining gaps are separate work items (writing E2E tests), not regressions.
+All originally identified E2E gaps from this report are now covered.
 
 ---
 
@@ -180,6 +173,5 @@ The following issues were found but are lower priority or require larger changes
 | `: any` type annotations in `catch-up.ts`                            | Non-breaking; code quality cleanup      |
 | `navigateToDashboard()` in sharing/catch-up navigates to `/advanced` | Cosmetic rename                         |
 | Analytics `hasAnyData` doesn't check weekly summary                  | Edge-case, low frequency                |
-| E2E test coverage for remaining gap (PDF export)                     | Separate test-writing task              |
 
 <!-- markdownlint-enable MD060 -->
