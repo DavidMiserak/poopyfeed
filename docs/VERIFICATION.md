@@ -167,11 +167,10 @@ The following issues were found but are lower priority or require larger changes
 
 <!-- markdownlint-disable MD060 -->
 
-| Issue                                                                | Reason Deferred                         |
-| -------------------------------------------------------------------- | --------------------------------------- |
-| `confirm()` dialogs in sharing and catch-up                          | Requires styled modal; separate UX work |
-| `: any` type annotations in `catch-up.ts`                            | Non-breaking; code quality cleanup      |
-| `navigateToDashboard()` in sharing/catch-up navigates to `/advanced` | Cosmetic rename                         |
-| Analytics `hasAnyData` doesn't check weekly summary                  | Edge-case, low frequency                |
+| Issue                                                                | Reason Deferred                    |
+| -------------------------------------------------------------------- | ---------------------------------- |
+| `: any` type annotations in `catch-up.ts`                            | Non-breaking; code quality cleanup |
+| `navigateToDashboard()` in sharing/catch-up navigates to `/advanced` | Cosmetic rename                    |
+| Analytics `hasAnyData` doesn't check weekly summary                  | Edge-case, low frequency           |
 
 <!-- markdownlint-enable MD060 -->
