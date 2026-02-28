@@ -139,14 +139,15 @@ The following gaps from the original audit are now covered:
 
 <!-- markdownlint-disable MD060 -->
 
-| Area                                             | Persona impact | Spec / notes                                       |
-| ------------------------------------------------ | -------------- | -------------------------------------------------- |
-| Quick-Log buttons (diaper, nap, bottle + toasts) | Mom, Maria     | `e2e/quick-log.e2e.spec.ts`                        |
-| Catch-Up mode (wizard, add/edit/delete events)   | Maria          | `e2e/catch-up.e2e.spec.ts`                         |
-| Edit/Delete feedings                             | All            | `e2e/feedings.e2e.spec.ts` + `tracking-helpers.ts` |
-| Edit/Delete diapers                              | All            | `e2e/diapers.e2e.spec.ts`                          |
-| Edit/Delete naps                                 | All            | `e2e/naps.e2e.spec.ts`                             |
-| CSV export                                       | Dad            | `e2e/analytics.e2e.spec.ts`                        |
+| Area                                               | Persona impact | Spec / notes                                       |
+| -------------------------------------------------- | -------------- | -------------------------------------------------- |
+| Quick-Log buttons (diaper, nap, bottle + toasts)   | Mom, Maria     | `e2e/quick-log.e2e.spec.ts`                        |
+| Catch-Up mode (wizard, add/edit/delete events)     | Maria          | `e2e/catch-up.e2e.spec.ts`                         |
+| Edit/Delete feedings                               | All            | `e2e/feedings.e2e.spec.ts` + `tracking-helpers.ts` |
+| Edit/Delete diapers                                | All            | `e2e/diapers.e2e.spec.ts`                          |
+| Edit/Delete naps                                   | All            | `e2e/naps.e2e.spec.ts`                             |
+| CSV export                                         | Dad            | `e2e/analytics.e2e.spec.ts`                        |
+| Child dashboard (Today's Summary, Recent Activity) | All            | `e2e/dashboard-content.e2e.spec.ts`                |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -154,13 +155,12 @@ The following gaps from the original audit are now covered:
 
 <!-- markdownlint-disable MD060 -->
 
-| Gap                                                      | Persona impact              |
-| -------------------------------------------------------- | --------------------------- |
-| Timeline view                                            | Dad — core feature          |
-| Child dashboard content (Today Summary, Recent Activity) | All                         |
-| Quiet hours settings page                                | All                         |
-| PDF export (async job + download)                        | Dad                         |
-| Keyboard navigation (child list cards)                   | Accessibility (WCAG 2.1 AA) |
+| Gap                                    | Persona impact              |
+| -------------------------------------- | --------------------------- |
+| Timeline view                          | Dad — core feature          |
+| Quiet hours settings page              | All                         |
+| PDF export (async job + download)      | Dad                         |
+| Keyboard navigation (child list cards) | Accessibility (WCAG 2.1 AA) |
 
 <!-- markdownlint-enable MD060 -->
 
