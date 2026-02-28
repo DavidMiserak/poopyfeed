@@ -217,6 +217,6 @@ And no banner renders during SSR
 - **Backend timestamp conversion** — API continues to return UTC; all conversion is frontend-only
 - **Relative time changes** — `formatTimestamp()` and `formatActivityAge()` are UTC-diff based and timezone-agnostic
 
-## Open Questions
+## Open Questions (resolved)
 
-- [ ] Should the banner also appear if the user's preference is still "UTC" (the default) and their browser reports a real timezone? This would help new users who never set a timezone. **Recommendation: Yes — treat UTC default as "not yet configured" and prompt.**
+- [x] Should the banner also appear if the user's preference is still "UTC" (the default) and their browser reports a real timezone? **Resolved: Yes.** The banner already appears when profile is UTC and browser differs. Frontend shows friendlier copy when profile is UTC: "Your device timezone is **X**. Set it as your preference so times display correctly." with button "Set to X".
