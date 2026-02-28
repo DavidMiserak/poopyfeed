@@ -14,6 +14,8 @@ This addresses a critical pain point for all three personas: Mom (too
 exhausted to log in real time), Dad (catching up after receiving
 verbal updates), and Caretaker (logging at end of shift).
 
+**Implementation status:** Fully implemented and complete (backend batch API, frontend catch-up flow, dashboard entry, E2E tests).
+
 **GitHub Issue**: #1 — "Catching Up"
 
 ## Functional Requirements
@@ -469,61 +471,61 @@ And the response includes the specific validation error for event index 3
 
 ### Backend
 
-- [ ] Create `POST /api/v1/children/{childId}/batch/` endpoint
-- [ ] Implement `BatchCreateSerializer` that validates a mixed array of events
-- [ ] Implement `BatchCreateView` that wraps creation in `transaction.atomic()`
-- [ ] Add per-event-type validation using existing serializers (FeedingSerializer, DiaperChangeSerializer, NapSerializer)
-- [ ] Add batch size limit validation (max 20)
-- [ ] Add structured error response with per-event error indices
-- [ ] Add URL routing for the batch endpoint
-- [ ] Add permission check (child access + add permission)
-- [ ] Add rate limiting (count batch as 1 request)
-- [ ] Write unit tests for batch serializer
-- [ ] Write API tests for batch endpoint (success, validation errors, transaction rollback, permissions, rate limiting)
+- [x] Create `POST /api/v1/children/{childId}/batch/` endpoint
+- [x] Implement `BatchCreateSerializer` that validates a mixed array of events
+- [x] Implement `BatchCreateView` that wraps creation in `transaction.atomic()`
+- [x] Add per-event-type validation using existing serializers (FeedingSerializer, DiaperChangeSerializer, NapSerializer)
+- [x] Add batch size limit validation (max 20)
+- [x] Add structured error response with per-event error indices
+- [x] Add URL routing for the batch endpoint
+- [x] Add permission check (child access + add permission)
+- [x] Add rate limiting (count batch as 1 request)
+- [x] Write unit tests for batch serializer
+- [x] Write API tests for batch endpoint (success, validation errors, transaction rollback, permissions, rate limiting)
 
 ### Frontend — Catch-Up Timeline Component
 
-- [ ] Create route `/children/:childId/catch-up`
-- [ ] Create `CatchUpComponent` with time window selector
-- [ ] Implement time window validation (start < end, not future, max 24h)
-- [ ] Fetch and display existing events in the window as read-only markers
-- [ ] Create event type selector (feeding/diaper/nap) for adding cards
-- [ ] Create compact event card component (icon + time)
-- [ ] Implement smart time estimation algorithm (proportional distribution)
-- [ ] Implement drag-and-drop reordering (Angular CDK DragDropModule)
-- [ ] Implement time recalculation on reorder
-- [ ] Implement event pinning (manual time override skips recalculation)
-- [ ] Create inline editing forms for each event type
-- [ ] Implement card expand/collapse interaction
-- [ ] Enforce 20-event limit with user feedback
-- [ ] Implement swipe-to-remove gesture (mobile)
-- [ ] Implement keyboard reordering (accessibility)
+- [x] Create route `/children/:childId/catch-up`
+- [x] Create `CatchUpComponent` with time window selector
+- [x] Implement time window validation (start < end, not future, max 24h)
+- [x] Fetch and display existing events in the window as read-only markers
+- [x] Create event type selector (feeding/diaper/nap) for adding cards
+- [x] Create compact event card component (icon + time)
+- [x] Implement smart time estimation algorithm (proportional distribution)
+- [x] Implement drag-and-drop reordering (Angular CDK DragDropModule)
+- [x] Implement time recalculation on reorder
+- [x] Implement event pinning (manual time override skips recalculation)
+- [x] Create inline editing forms for each event type
+- [x] Implement card expand/collapse interaction
+- [x] Enforce 20-event limit with user feedback
+- [x] Implement swipe-to-remove gesture (mobile)
+- [x] Implement keyboard reordering (accessibility)
 
 ### Frontend — Batch Submission
 
-- [ ] Create `BatchService` with `create(childId, events)` method
-- [ ] Implement "Save All" with validation before submit
-- [ ] Implement loading state during submission
-- [ ] Handle success: toast + navigate to dashboard
-- [ ] Handle failure: highlight invalid cards, preserve data
-- [ ] Implement "Cancel" with discard confirmation dialog
-- [ ] Implement unsaved changes guard (CanDeactivate)
+- [x] Create `BatchService` with `create(childId, events)` method
+- [x] Implement "Save All" with validation before submit
+- [x] Implement loading state during submission
+- [x] Handle success: toast + navigate to dashboard
+- [x] Handle failure: highlight invalid cards, preserve data
+- [x] Implement "Cancel" with discard confirmation dialog
+- [x] Implement unsaved changes guard (CanDeactivate)
 
 ### Frontend — Dashboard Integration
 
-- [ ] Add "Catch Up" button to child dashboard
-- [ ] Add loading spinner on Catch Up button during navigation
-- [ ] Style button consistently with existing action buttons
+- [x] Add "Catch Up" button to child dashboard
+- [x] Add loading spinner on Catch Up button during navigation
+- [x] Style button consistently with existing action buttons
 
 ### Testing
 
-- [ ] Backend: Unit tests for batch serializer validation
-- [ ] Backend: API tests for batch endpoint (10+ scenarios)
-- [ ] Frontend: Vitest tests for time estimation algorithm
-- [ ] Frontend: Vitest tests for CatchUpComponent (add, remove, reorder)
-- [ ] Frontend: Vitest tests for BatchService
-- [ ] Frontend: Vitest tests for inline editing interactions
-- [ ] Frontend: Vitest tests for discard confirmation guard
+- [x] Backend: Unit tests for batch serializer validation
+- [x] Backend: API tests for batch endpoint (10+ scenarios)
+- [x] Frontend: Vitest tests for time estimation algorithm
+- [x] Frontend: Vitest tests for CatchUpComponent (add, remove, reorder)
+- [x] Frontend: Vitest tests for BatchService
+- [x] Frontend: Vitest tests for inline editing interactions
+- [x] Frontend: Vitest tests for discard confirmation guard
 
 ## Out of Scope
 

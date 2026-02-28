@@ -15,6 +15,8 @@ Feeding reminders address the #1 missing need for Mom (Sarah): proactive alerts 
 - Never fires if no feedings on record for that child
 - Enable/disable: interval = null means off
 
+**Implementation status:** Fully implemented and complete (backend: Child field, Celery task, FeedingReminderLog, API validation; frontend: interval picker on child edit for owner/co-parent; bell displays reminder notifications).
+
 ---
 
 ## Functional Requirements (EARS)
@@ -140,6 +142,23 @@ Then the system returns 403 Forbidden.
 
 ---
 
-## Implementation Sections
+## Implementation TODO
 
-See IMPLEMENTATION_PLAN.md for step-by-step backend and frontend implementation tasks.
+### Backend
+
+- [x] Add `feeding_reminder_interval` to Child model (null, 2, 3, 4, 6); migration
+- [x] Add `FeedingReminderLog` model for idempotency (child, window_start, reminder_number)
+- [x] Implement `check_feeding_reminders` Celery task (initial at interval, repeat at 1.5×; respect notify_feedings; bypass quiet hours)
+- [x] Schedule task every 30 minutes in Celery Beat
+- [x] API: include `feeding_reminder_interval` in child serializers; validate 2/3/4/6 or null
+- [x] API: only owner/co-parent may set `feeding_reminder_interval` (caregiver 403)
+- [x] Unit tests for task (fire at threshold, repeat at 1.5×, no third, window reset, no history, notify_feedings, quiet hours bypass)
+- [x] API tests for interval get/set and caregiver 403
+
+### Frontend — Interval picker and bell
+
+- [x] Add `feeding_reminder_interval` to child model and child form (edit mode)
+- [x] Display "Feeding Reminders" section on child edit with dropdown: Off / 2h / 3h / 4h / 6h (owner and co-parent only; hidden for caregiver)
+- [x] Persist on form submit via PATCH
+- [x] Bell displays feeding reminder notifications (distinct icon/message; reuses existing notification UI)
+- [x] Unit tests for child form (interval picker visibility, save, caregiver cannot see/change)

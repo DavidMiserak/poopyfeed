@@ -6,6 +6,8 @@ All activity timestamps (feedings, diapers, naps) are stored in UTC and should b
 
 This is a must-have UX fix. Parents and caregivers traveling across timezones (or with misconfigured system clocks) currently see times in their browser's local timezone, which may not match the timezone they've chosen in account settings.
 
+**Implementation status:** Fully implemented and complete (DateTimeService methods, component updates, TimezoneBanner, TimezoneCheckService, session dismissal; deprecated `isToday()` removed from date.utils).
+
 ### User Value
 
 - **Mom (Sarah)**: Sees correct times even when traveling to visit family in a different timezone
@@ -168,44 +170,44 @@ And no banner renders during SSR
 
 ### Frontend — `DateTimeService` Enhancements
 
-- [ ] Add `formatDateTime(utcString)` method — returns "Mon DD, YYYY, H:MM AM/PM" in user tz
-- [ ] Add `formatTimeOnly(utcString)` method — returns "H:MM AM/PM" in user tz
-- [ ] Add `formatDateForDisplay(isoDate)` method — returns "Weekday, Mon DD" in user tz
-- [ ] Add `getBrowserTimezone()` static method — returns `Intl.DateTimeFormat().resolvedOptions().timeZone` with SSR guard
-- [ ] Add unit tests for all new methods with explicit timezone mocking
+- [x] Add `formatDateTime(utcString)` method — returns "Mon DD, YYYY, H:MM AM/PM" in user tz
+- [x] Add `formatTimeOnly(utcString)` method — returns "H:MM AM/PM" in user tz
+- [x] Add `formatDateForDisplay(isoDate)` method — returns "Weekday, Mon DD" in user tz
+- [x] Add `getBrowserTimezone()` static method — returns `Intl.DateTimeFormat().resolvedOptions().timeZone` with SSR guard
+- [x] Add unit tests for all new methods with explicit timezone mocking
 
 ### Frontend — Fix Affected Components
 
-- [ ] `feedings-list.ts` — replace inline `formatDateTime()` with `DateTimeService.formatDateTime()`
-- [ ] `diapers-list.ts` — replace inline `formatDateTime()` with `DateTimeService.formatDateTime()`
-- [ ] `naps-list.ts` — replace inline `formatDateTime()` and `formatTimeOnly()` with `DateTimeService` methods
-- [ ] `feeding-delete.ts` — replace inline `formatDateTime()` with `DateTimeService.formatDateTime()`
-- [ ] `diaper-delete.ts` — replace inline `formatDateTime()` with `DateTimeService.formatDateTime()`
-- [ ] `nap-delete.ts` — replace inline `formatDateTime()` with `DateTimeService.formatDateTime()`
-- [ ] `child-timeline.ts` — add `timeZone: this.datetimeService.userTimezone` to gap time formatting
-- [ ] `child-timeline.html` — pass user timezone to `date` pipe
-- [ ] `filter.service.ts` — add `timeZone` to `formatDateForDisplay()`
-- [ ] `export-job-status.html` — pass user timezone to `date` pipe
-- [ ] Update tests for all modified components
+- [x] `feedings-list.ts` — replace inline `formatDateTime()` with `DateTimeService.formatDateTime()`
+- [x] `diapers-list.ts` — replace inline `formatDateTime()` with `DateTimeService.formatDateTime()`
+- [x] `naps-list.ts` — replace inline `formatDateTime()` and `formatTimeOnly()` with `DateTimeService` methods
+- [x] `feeding-delete.ts` — replace inline `formatDateTime()` with `DateTimeService.formatDateTime()`
+- [x] `diaper-delete.ts` — replace inline `formatDateTime()` with `DateTimeService.formatDateTime()`
+- [x] `nap-delete.ts` — replace inline `formatDateTime()` with `DateTimeService.formatDateTime()`
+- [x] `child-timeline.ts` — add `timeZone: this.datetimeService.userTimezone` to gap time formatting
+- [x] `child-timeline.html` — pass user timezone to `date` pipe
+- [x] `filter.service.ts` — add `timeZone` to `formatDateForDisplay()`
+- [x] `export-job-status.html` — pass user timezone to `date` pipe
+- [x] Update tests for all modified components
 
 ### Frontend — Timezone Mismatch Banner
 
-- [ ] Create `TimezoneCheckService` — compares browser tz with profile tz, exposes `mismatch` signal and `dismissedThisSession` signal
-- [ ] Create `TimezoneBannerComponent` — dismissable banner with Update/Dismiss actions
-- [ ] Wire banner into app layout (above router outlet or in navbar area)
-- [ ] Add `sessionStorage` key `tz-banner-dismissed` for session-scoped dismissal
-- [ ] On "Update" click: call `AccountService.updateProfile({ timezone })`, dismiss on success, toast on error
-- [ ] Add unit tests for `TimezoneCheckService`
-- [ ] Add unit tests for `TimezoneBannerComponent`
+- [x] Create `TimezoneCheckService` — compares browser tz with profile tz, exposes `mismatch` signal and `dismissedThisSession` signal
+- [x] Create `TimezoneBannerComponent` — dismissable banner with Update/Dismiss actions
+- [x] Wire banner into app layout (above router outlet or in navbar area)
+- [x] Add `sessionStorage` key `tz-banner-dismissed` for session-scoped dismissal
+- [x] On "Update" click: call `AccountService.updateProfile({ timezone })`, dismiss on success, toast on error
+- [x] Add unit tests for `TimezoneCheckService`
+- [x] Add unit tests for `TimezoneBannerComponent`
 
 ### Frontend — Cleanup
 
-- [ ] Remove deprecated `isToday()` from `date.utils.ts`
-- [ ] Remove `isToday` from `date.utils.spec.ts`
+- [x] Remove deprecated `isToday()` from `date.utils.ts`
+- [x] Remove `isToday` from `date.utils.spec.ts`
 
 ### Backend
 
-- [ ] No backend changes required — existing `PATCH /api/v1/account/profile/` with `validate_timezone()` already handles timezone updates
+- [x] No backend changes required — existing `PATCH /api/v1/account/profile/` with `validate_timezone()` already handles timezone updates
 
 ## Out of Scope
 
