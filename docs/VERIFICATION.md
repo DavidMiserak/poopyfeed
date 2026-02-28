@@ -148,6 +148,7 @@ The following gaps from the original audit are now covered:
 | Edit/Delete naps                                   | All            | `e2e/naps.e2e.spec.ts`                             |
 | CSV export                                         | Dad            | `e2e/analytics.e2e.spec.ts`                        |
 | Child dashboard (Today's Summary, Recent Activity) | All            | `e2e/dashboard-content.e2e.spec.ts`                |
+| Timeline view (7-day, nav, activity)               | Dad            | `e2e/timeline.e2e.spec.ts`                         |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -157,7 +158,6 @@ The following gaps from the original audit are now covered:
 
 | Gap                                    | Persona impact              |
 | -------------------------------------- | --------------------------- |
-| Timeline view                          | Dad — core feature          |
 | Quiet hours settings page              | All                         |
 | PDF export (async job + download)      | Dad                         |
 | Keyboard navigation (child list cards) | Accessibility (WCAG 2.1 AA) |
@@ -174,12 +174,12 @@ The following issues were found but are lower priority or require larger changes
 
 <!-- markdownlint-disable MD060 -->
 
-| Issue                                                                                          | Reason Deferred                         |
-| ---------------------------------------------------------------------------------------------- | --------------------------------------- |
-| `confirm()` dialogs in sharing and catch-up                                                    | Requires styled modal; separate UX work |
-| `: any` type annotations in `catch-up.ts`                                                      | Non-breaking; code quality cleanup      |
-| `navigateToDashboard()` in sharing/catch-up navigates to `/advanced`                           | Cosmetic rename                         |
-| Analytics `hasAnyData` doesn't check weekly summary                                            | Edge-case, low frequency                |
-| E2E test coverage for remaining gaps (timeline, dashboard content, quiet hours, PDF, keyboard) | Separate test-writing task              |
+| Issue                                                                | Reason Deferred                         |
+| -------------------------------------------------------------------- | --------------------------------------- |
+| `confirm()` dialogs in sharing and catch-up                          | Requires styled modal; separate UX work |
+| `: any` type annotations in `catch-up.ts`                            | Non-breaking; code quality cleanup      |
+| `navigateToDashboard()` in sharing/catch-up navigates to `/advanced` | Cosmetic rename                         |
+| Analytics `hasAnyData` doesn't check weekly summary                  | Edge-case, low frequency                |
+| E2E test coverage for remaining gaps (quiet hours, PDF, keyboard)    | Separate test-writing task              |
 
 <!-- markdownlint-enable MD060 -->
