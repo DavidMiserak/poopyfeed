@@ -150,6 +150,7 @@ The following gaps from the original audit are now covered:
 | Child dashboard (Today's Summary, Recent Activity)  | All            | `e2e/dashboard-content.e2e.spec.ts`                |
 | Timeline view (7-day, nav, activity)                | Dad            | `e2e/timeline.e2e.spec.ts`                         |
 | Keyboard navigation (child list cards, Enter/Space) | Accessibility  | `e2e/keyboard-navigation.e2e.spec.ts`              |
+| Quiet hours settings page (view and save)           | All            | `e2e/quiet-hours.e2e.spec.ts`                      |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -159,7 +160,6 @@ The following gaps from the original audit are now covered:
 
 | Gap                               | Persona impact |
 | --------------------------------- | -------------- |
-| Quiet hours settings page         | All            |
 | PDF export (async job + download) | Dad            |
 
 <!-- markdownlint-enable MD060 -->
@@ -180,6 +180,6 @@ The following issues were found but are lower priority or require larger changes
 | `: any` type annotations in `catch-up.ts`                            | Non-breaking; code quality cleanup      |
 | `navigateToDashboard()` in sharing/catch-up navigates to `/advanced` | Cosmetic rename                         |
 | Analytics `hasAnyData` doesn't check weekly summary                  | Edge-case, low frequency                |
-| E2E test coverage for remaining gaps (quiet hours, PDF)              | Separate test-writing task              |
+| E2E test coverage for remaining gap (PDF export)                     | Separate test-writing task              |
 
 <!-- markdownlint-enable MD060 -->
