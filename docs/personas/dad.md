@@ -15,6 +15,13 @@
 - Feel confident handling baby care independently
 - Support partner by sharing the mental load
 
+## Anti-goals / What they don't want
+
+- To open the app repeatedly just to "check in" — would rather see a summary or notification
+- To duplicate what their partner already logged, or to guess what's been done
+- Confusing or inconsistent times (e.g. timezone mismatches) when coordinating with partner
+- Tracking systems that feel like extra work instead of reducing mental load
+
 ## Pain Points
 
 - Feels out of the loop when not the primary caregiver

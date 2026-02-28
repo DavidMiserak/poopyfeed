@@ -15,6 +15,14 @@
 - Maintain professional records of care provided
 - Quickly learn the app without extensive training
 
+## Anti-goals / What they don't want
+
+- Complex flows, jargon, or needing training to use the app
+- To accidentally change or delete parents' entries
+- To wonder whether something actually saved — need clear visual confirmation
+- Free-form entry when preset options would do (e.g. "wet" / "dirty" / "both" over typing)
+- Access to billing, account settings, or anything outside the care of the child(ren)
+
 ## Pain Points
 
 - May care for multiple children with different tracking needs

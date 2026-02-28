@@ -15,6 +15,14 @@
 - Share tracking data with partner and pediatrician
 - Reduce mental load by having a single source of truth
 
+## Anti-goals / What they don't want
+
+- To think or make decisions when logging in the middle of the night
+- Multi-step flows or hunting for the right screen
+- Apps that demand attention with too many features or prompts
+- To do mental math (e.g. "how long since last feed?") — the app should surface that
+- To re-enter or duplicate data that's already been logged
+
 ## Pain Points
 
 - Exhausted and sleep-deprived, needs quick data entry
