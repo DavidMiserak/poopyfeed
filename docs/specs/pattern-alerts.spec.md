@@ -29,6 +29,8 @@ and displayed inline on the dashboard — no push notification infrastructure re
 - Dashboard loads alerts separately (after main content) so they never delay the primary render
 - Alerts are display-only; they do not create notification records or send push notifications
 
+**Implementation status:** Fully implemented and complete (backend: `compute_pattern_alerts`, endpoint, 120s cache, tests; frontend: analytics service, dashboard alert cards, separate load, re-fetch on quick log).
+
 ---
 
 ## Functional Requirements (EARS)
@@ -224,30 +226,20 @@ feeding resolves the overdue condition.
 
 ---
 
-## Implementation Notes
+## Implementation TODO
 
-**Backend — `back-end/analytics/utils.py`**
-Add `compute_pattern_alerts(child_id, now=None)` using `Feeding` and `Nap` models.
-Two private helpers: `_compute_interval_alert` (feeding gaps) and `_compute_wake_alert`
-(nap end → next nap start gaps).
+### Backend
 
-**Backend — `back-end/analytics/views.py`**
-Add `pattern_alerts` action to `AnalyticsViewSet` using existing `_get_cached_data` helper
-with `cache_ttl=120`. Follow same pattern as `today_summary`.
+- [x] Add `compute_pattern_alerts(child_id, now=None)` in `back-end/analytics/utils.py` using `Feeding` and `Nap` models; private helpers for feeding intervals and wake window.
+- [x] Add `pattern_alerts` action to `AnalyticsViewSet` in `back-end/analytics/views.py` using `_get_cached_data` with `cache_ttl=120`.
+- [x] Add `path("children/<pk>/pattern-alerts/", ..., name="analytics-pattern-alerts")` in `back-end/analytics/urls.py` and `api_urls.py`.
+- [x] Add cache key for pattern-alerts in `back-end/analytics/cache.py`.
+- [x] Unit tests for `compute_pattern_alerts`; API tests for pattern-alerts endpoint (access control, caching, co-parent access).
 
-**Backend — `back-end/analytics/urls.py`**
-Add `path("children/<pk>/pattern-alerts/", ..., name="analytics-pattern-alerts")`.
+### Frontend
 
-**Frontend — models**
-Add `PatternAlertItem` and `PatternAlertsData` interfaces to the analytics model file.
-
-**Frontend — `analytics.service.ts`**
-Add `getPatternAlerts(childId)` method following existing service patterns.
-
-**Frontend — `child-dashboard.ts`**
-Add `patternAlerts` signal and `activeAlerts` computed. Load via separate subscription
-after `forkJoin` completes. Re-fetch after `onQuickLogged()` callback (feeding only).
-
-**Frontend — `child-dashboard.html`**
-Insert `@if (activeAlerts().length > 0)` block above the Quick Log section using Tailwind
-amber palette (`bg-amber-50`, `border-amber-200`, `text-amber-900`).
+- [x] Add `FeedingPatternAlert`, `NapPatternAlert`, and `PatternAlertsResponse` to analytics model file.
+- [x] Add `getPatternAlerts(childId)` to `analytics.service.ts` and `patternAlerts` signal.
+- [x] Add `patternAlerts` signal and `activeAlerts` computed to `child-dashboard.ts`; load via separate subscription after main data; re-fetch after `onQuickLogged()` (feeding).
+- [x] Add pattern alerts region in `child-dashboard.html` above Quick Log with Tailwind amber palette (`bg-amber-50`, `border-amber-200`, `text-amber-900`); silent error handling (no alert cards on error).
+- [x] Unit tests for `AnalyticsService.getPatternAlerts` and child-dashboard pattern alerts (display, error suppression, re-fetch on quick log).
