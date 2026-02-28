@@ -56,7 +56,7 @@ This document plans the four improvements identified in the Django-expert review
 - [x] **2.2** Add `indexes` in `DiaperChange.Meta`: `[models.Index(fields=["child", "changed_at"])]`. Run `makemigrations diapers` (e.g. `add_child_changed_at_index`).
 - [x] **2.3** Add `indexes` in `Nap.Meta`: `[models.Index(fields=["child", "napped_at"])]`. Run `makemigrations naps` (e.g. `add_child_napped_at_index`).
 - [x] **2.4** Run `migrate` and confirm no errors. Run full backend test suite (`make test-backend` or equivalent).
-- [ ] **2.5** Optionally run `EXPLAIN ANALYZE` on a representative analytics query (e.g. feeding trends for one child) before/after to confirm index use (PostgreSQL).
+- [x] **2.5** Optionally run `EXPLAIN ANALYZE` on a representative analytics query (e.g. feeding trends for one child) before/after to confirm index use (PostgreSQL). **Done:** Ran on feeding trends, diaper patterns, and sleep summary. With current small tables (~40 rows each) the planner chooses Seq Scan; with larger data PostgreSQL will use the composite indexes (`children_fe_child_i_*`, etc.) for Index Scan.
 
 **Acceptance criteria:**
 
