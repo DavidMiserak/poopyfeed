@@ -139,16 +139,17 @@ The following gaps from the original audit are now covered:
 
 <!-- markdownlint-disable MD060 -->
 
-| Area                                               | Persona impact | Spec / notes                                       |
-| -------------------------------------------------- | -------------- | -------------------------------------------------- |
-| Quick-Log buttons (diaper, nap, bottle + toasts)   | Mom, Maria     | `e2e/quick-log.e2e.spec.ts`                        |
-| Catch-Up mode (wizard, add/edit/delete events)     | Maria          | `e2e/catch-up.e2e.spec.ts`                         |
-| Edit/Delete feedings                               | All            | `e2e/feedings.e2e.spec.ts` + `tracking-helpers.ts` |
-| Edit/Delete diapers                                | All            | `e2e/diapers.e2e.spec.ts`                          |
-| Edit/Delete naps                                   | All            | `e2e/naps.e2e.spec.ts`                             |
-| CSV export                                         | Dad            | `e2e/analytics.e2e.spec.ts`                        |
-| Child dashboard (Today's Summary, Recent Activity) | All            | `e2e/dashboard-content.e2e.spec.ts`                |
-| Timeline view (7-day, nav, activity)               | Dad            | `e2e/timeline.e2e.spec.ts`                         |
+| Area                                                | Persona impact | Spec / notes                                       |
+| --------------------------------------------------- | -------------- | -------------------------------------------------- |
+| Quick-Log buttons (diaper, nap, bottle + toasts)    | Mom, Maria     | `e2e/quick-log.e2e.spec.ts`                        |
+| Catch-Up mode (wizard, add/edit/delete events)      | Maria          | `e2e/catch-up.e2e.spec.ts`                         |
+| Edit/Delete feedings                                | All            | `e2e/feedings.e2e.spec.ts` + `tracking-helpers.ts` |
+| Edit/Delete diapers                                 | All            | `e2e/diapers.e2e.spec.ts`                          |
+| Edit/Delete naps                                    | All            | `e2e/naps.e2e.spec.ts`                             |
+| CSV export                                          | Dad            | `e2e/analytics.e2e.spec.ts`                        |
+| Child dashboard (Today's Summary, Recent Activity)  | All            | `e2e/dashboard-content.e2e.spec.ts`                |
+| Timeline view (7-day, nav, activity)                | Dad            | `e2e/timeline.e2e.spec.ts`                         |
+| Keyboard navigation (child list cards, Enter/Space) | Accessibility  | `e2e/keyboard-navigation.e2e.spec.ts`              |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -156,11 +157,10 @@ The following gaps from the original audit are now covered:
 
 <!-- markdownlint-disable MD060 -->
 
-| Gap                                    | Persona impact              |
-| -------------------------------------- | --------------------------- |
-| Quiet hours settings page              | All                         |
-| PDF export (async job + download)      | Dad                         |
-| Keyboard navigation (child list cards) | Accessibility (WCAG 2.1 AA) |
+| Gap                               | Persona impact |
+| --------------------------------- | -------------- |
+| Quiet hours settings page         | All            |
+| PDF export (async job + download) | Dad            |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -180,6 +180,6 @@ The following issues were found but are lower priority or require larger changes
 | `: any` type annotations in `catch-up.ts`                            | Non-breaking; code quality cleanup      |
 | `navigateToDashboard()` in sharing/catch-up navigates to `/advanced` | Cosmetic rename                         |
 | Analytics `hasAnyData` doesn't check weekly summary                  | Edge-case, low frequency                |
-| E2E test coverage for remaining gaps (quiet hours, PDF, keyboard)    | Separate test-writing task              |
+| E2E test coverage for remaining gaps (quiet hours, PDF)              | Separate test-writing task              |
 
 <!-- markdownlint-enable MD060 -->
