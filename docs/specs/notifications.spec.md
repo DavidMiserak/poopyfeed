@@ -2,7 +2,7 @@
 
 ## Overview
 
-In-app notifications alert shared users (co-parents, caregivers) when someone logs a feeding, diaper change, or nap for a shared child. This closes the #1 gap identified in persona analysis: Dad (Michael) and others no longer need to open the app to discover new activity. Notifications are in-app only (bell icon and dropdown), with per-child preferences and global quiet hours. Backend is implemented; frontend is pending.
+In-app notifications alert shared users (co-parents, caregivers) when someone logs a feeding, diaper change, or nap for a shared child. This closes the #1 gap identified in persona analysis: Dad (Michael) and others no longer need to open the app to discover new activity. Notifications are in-app only (bell icon and dropdown), with per-child preferences and global quiet hours. **Fully implemented and complete.**
 
 ## Implementation Status
 
