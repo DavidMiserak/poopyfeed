@@ -44,6 +44,7 @@ services:
         build:
             context: ./back-end
             dockerfile: Containerfile
+            target: development
         command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./back-end:/code
@@ -81,6 +82,7 @@ services:
         build:
             context: ./back-end
             dockerfile: Containerfile
+            target: development
         command: celery -A django_project worker -l info
         volumes:
             - ./back-end:/code
