@@ -44,7 +44,7 @@ services:
         build:
             context: ./back-end
             dockerfile: Containerfile
-        command: gunicorn django_project.wsgi:application --bind 0.0.0.0:8000 --workers 4 --threads 2 --reload
+        command: python manage.py runserver 0.0.0.0:8000
         volumes:
             - ./back-end:/code
         ports:
