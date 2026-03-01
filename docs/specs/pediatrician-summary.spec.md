@@ -114,7 +114,7 @@ Then the system shows an appropriate error (e.g. from API 403/404) and does not 
 ### Testing
 
 - [x] Unit tests: component loads weekly summary and child; displays loading, content, empty, and error states; retry triggers reload; Print button calls `window.print()`.
-- [ ] Optional E2E: navigate to Pediatrician summary from child context; assert summary section and Print button visible.
+- [x] Optional E2E: navigate to Pediatrician summary from child context; assert summary section and Print button visible.
 
 ### Backend
 
