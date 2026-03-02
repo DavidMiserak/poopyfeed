@@ -25,7 +25,7 @@ help:
 	@echo "Front-end Commands:"
 	@echo "make test-frontend             - Run front-end tests"
 	@echo "make test-frontend-coverage    - Run front-end tests with coverage (for SonarQube)"
-	@echo "make test-e2e                 - Run E2E in container (requires: make run; uses Firefox)"
+	@echo "make test-e2e                 - Run E2E in container (requires: make run; backend uses relaxed throttling)"
 	@echo "make test-e2e-local            - Run E2E on host (requires: make run; run make test-e2e-install once)"
 	@echo "make shell-frontend            - Front-end container shell"
 	@echo "make build-frontend            - Build production front-end"
@@ -186,6 +186,7 @@ test-e2e:
 	@echo "======================================"
 	@echo "Running E2E tests in container (Firefox, BASE_URL=frontend:4200)"
 	@echo "Prerequisite: make run (frontend + backend must be up)"
+	@echo "Backend runs with RELAX_E2E_THROTTLES=1 so E2E does not hit rate limits (429)."
 	@echo "======================================"
 	$(RUNTIME) compose run --rm e2e
 
@@ -194,6 +195,7 @@ test-e2e-local:
 	@echo "======================================"
 	@echo "Running E2E tests on host (Firefox, localhost:4200)"
 	@echo "Prerequisite: make run; run make test-e2e-install once"
+	@echo "Backend from 'make run' uses RELAX_E2E_THROTTLES=1 to avoid 429s during E2E."
 	@echo "======================================"
 	cd $(E2E_DIR) && npm run test:e2e
 
