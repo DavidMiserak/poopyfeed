@@ -8,7 +8,7 @@ This specification defines requirements for bringing the **back-end submodule’
 
 **Scope:** Back-end only. No API or front-end changes. All data and permissions use existing APIs or server-side equivalents (same models, permissions, and analytics/export logic).
 
-**Implementation status:** Complete for Phase 1–3 (dashboard, timeline, analytics, export, catch-up). Optional tracking list filtering not implemented.
+**Implementation status:** Complete for Phase 1–3 (dashboard, timeline, analytics, export, catch-up) and optional tracking list filtering (date range and type).
 
 ---
 
@@ -27,7 +27,7 @@ This specification defines requirements for bringing the **back-end submodule’
 | Export                | ✅ CSV immediate, PDF queue + status (meta refresh poll)    | ✅ Export page (CSV/PDF, date range, poll, download) |
 | Catch-up              | ✅ Date range + event timeline; links to add F/D/N          | ✅ Catch-up page (time window, event timeline)       |
 | Timeline              | ✅ Merged feed, pagination                                  | ✅ Unified activity feed (all types, one list)       |
-| Tracking list filter  | ❌ No filter UI (optional)                                  | ✅ Filter by type and date                           |
+| Tracking list filter  | ✅ Date range + type (feedings/diapers); date range (naps)  | ✅ Filter by type and date                           |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -248,9 +248,9 @@ Then the error message from the API is displayed, polling stops, and the user ca
     - [x] Fetch events in selected window (ORM); render event timeline by date.
     - [x] “Add feeding” / “Add diaper” / “Add nap” link to existing add views; user returns to catch-up manually or via browser back.
 
-- [ ] **Tracking list filtering (optional)**
-    - [ ] Add optional date range (and type) query params to diaper/feeding/nap list views.
-    - [ ] Add filter form or links in list templates; preserve filter in pagination links.
+- [x] **Tracking list filtering (optional)**
+    - [x] Add optional date range (and type) query params to diaper/feeding/nap list views.
+    - [x] Add filter form or links in list templates; preserve filter in pagination links.
 
 - [x] **Tests**
     - [x] Test dashboard: required context (child, summary, recent activity), permission (owner vs no-access 404).
