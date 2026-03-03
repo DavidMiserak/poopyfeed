@@ -127,22 +127,6 @@ services:
         networks:
             - poopyfeed-network
 
-    # E2E tests (run with: make test-e2e)
-    e2e:
-        build:
-            context: .
-            dockerfile: Containerfile.e2e
-        container_name: poopyfeed-e2e
-        environment:
-            - "BASE_URL=http://frontend:4200"
-            - "CI=1"
-        depends_on:
-            - frontend
-        networks:
-            - poopyfeed-network
-        ipc: host
-        init: true
-
     # Android build toolchain (on-demand, not started with `make run`)
     android:
         image: ${REGISTRY:-localhost}/${ANDROID_IMAGE:-poopyfeed-android}:${IMAGE_TAG:-latest}
