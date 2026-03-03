@@ -208,7 +208,7 @@ test-e2e:
 	@echo "Prerequisite: make run (frontend + backend must be up)"
 	@echo "Backend runs with RELAX_E2E_THROTTLES=1 so E2E does not hit rate limits (429)."
 	@echo "======================================"
-	$(RUNTIME) compose run --rm e2e
+	$(RUNTIME) compose exec frontend npm run test:e2e
 
 .PHONY: test-e2e-local
 test-e2e-local:
