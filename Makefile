@@ -173,6 +173,14 @@ shell-backend:
 createsuperuser:
 	$(RUNTIME) compose exec backend python manage.py createsuperuser
 
+.PHONY: seed-data
+seed-data:
+	$(RUNTIME) compose exec backend python manage.py seed_data
+
+.PHONY: seed-data-flush
+seed-data-flush:
+	$(RUNTIME) compose exec backend python manage.py seed_data --flush
+
 # Front-end specific commands
 .PHONY: test-frontend
 test-frontend:
