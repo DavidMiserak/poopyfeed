@@ -10,7 +10,7 @@ The Fuss Bus is a guided troubleshooting wizard that helps parents and caregiver
 
 **Priority**: High
 
-**Implementation approach**: Frontend-only (no new backend models or endpoints). Uses existing APIs: `pattern-alerts`, `today-summary`, and child profile data. Accessible from both the child dashboard (quick-access button) and the Advanced Tools grid.
+**Implementation approach**: Frontend-only (no new backend models or endpoints). Uses existing analytics APIs: `pattern-alerts`, dashboard summary, timeline, and child profile data. Accessible from both the child dashboard (quick-access button) and the Advanced Tools grid.
 
 ## Functional Requirements
 
@@ -148,6 +148,14 @@ The system shall display a "When to Call the Doctor" section with warning signs:
 
 While the child is 0–4 months old and the symptom is "Crying," the system shall include a colic information section explaining the 3-3-3 rule (>3 hours/day, >3 days/week, for 3+ weeks) and recommending pediatrician consultation.
 
+#### FR-FB-035: Soothing Toolkit Glossary
+
+While viewing the "Soothing Toolkit" section, the system shall allow the user to tap glossary-linked terms (e.g., "Colic hold," "Swaddling," "White noise," "Teething") to open an accessible overlay that explains the term in plain language. The overlay shall appear as a modal dialog with a clear title and body text and shall be dismissible via a Close button, clicking the backdrop, or pressing the Escape key.
+
+#### FR-FB-036: Lullaby Lyrics Overlay
+
+While viewing the "Calming Sounds" category within the "Soothing Toolkit," the system shall display a short list of classic lullaby titles under a "Singing" sub-section. Tapping a lullaby title shall open the same overlay used for glossary terms, populated with the full song lyrics, so that caregivers can quickly reference words while soothing the child.
+
 ### Safety & Self-Care
 
 #### FR-FB-040: Parent Self-Care Section
@@ -179,7 +187,7 @@ The system shall display a 3-step progress indicator showing the current step (e
 
 #### FR-FB-053: Quick Log Shortcut
 
-While on Step 2 and an auto-check item indicates a need (e.g., feeding overdue), the system shall provide a "Log now" link that navigates to the relevant tracking form (e.g., new feeding form) with a return path back to The Fuss Bus.
+While on Step 2 and an auto-check item indicates a need (e.g., feeding overdue or nap overdue), the system shall provide a contextual "Log now" link next to the relevant auto-check item that navigates directly to the corresponding tracking form (e.g., new feeding, diaper, or nap form).
 
 ## Non-Functional Requirements
 
@@ -196,6 +204,7 @@ While on Step 2 and an auto-check item indicates a need (e.g., feeding overdue),
 - All interactive elements shall be keyboard-navigable
 - Screen reader support: ARIA labels on all checklist items, step indicators, and navigation controls
 - Color is not the only indicator — icons accompany all status states (check, warning, unchecked)
+- Glossary and lyrics overlays shall use proper dialog semantics (role, labels) and support dismissal via keyboard (Escape) and pointer (backdrop click)
 - Respects `prefers-reduced-motion` for any animations
 
 ### UX
@@ -292,6 +301,20 @@ Then they navigate to The Fuss Bus for that child
 Given a user who has been on The Fuss Bus for more than 5 minutes
 Then the parent self-care section is visually elevated (expanded, emphasized)
 
+### AC-012: Glossary Definitions for Soothing Techniques
+
+Given a user on Step 3 viewing the "Soothing Toolkit"
+When they tap a glossary-linked term such as "Colic hold" or "Swaddling"
+Then an overlay appears with a clear title and explanation of that term
+And the user can dismiss the overlay via the Close button, clicking the backdrop, or pressing Escape
+
+### AC-013: Lullaby Lyrics Under Calming Sounds
+
+Given a user on Step 3 viewing the "Soothing Toolkit"
+And the "Calming Sounds" category is visible
+When they tap on a lullaby title under the "Singing" sub-section
+Then an overlay appears showing the full lyrics for that lullaby in a readable format
+
 ## Error Handling
 
 | Error Condition                                   | Behavior                                                                                                                                     |
@@ -306,24 +329,25 @@ Then the parent self-care section is visually elevated (expanded, emphasized)
 
 ### Frontend
 
-- [ ] Create `FussBusComponent` at `features/fuss-bus/fuss-bus.ts` with 3-step wizard state management
-- [ ] Create `SymptomSelectionComponent` (Step 1) with 4 large radio-card tap targets
-- [ ] Create `SmartChecklistComponent` (Step 2) with auto-check + manual items
-- [ ] Create `SuggestionsComponent` (Step 3) with prioritized suggestions, soothing toolkit, doctor section, self-care
-- [ ] Create `StepIndicatorComponent` — 3-step progress bar
-- [ ] Create `fuss-bus.data.ts` — all content data (causes, solutions, age ranges, soothing toolkit) as typed constants
-- [ ] Create `fuss-bus.utils.ts` — age calculation, threshold logic, suggestion prioritization
-- [ ] Add route `/children/:childId/fuss-bus` to children routing module
-- [ ] Add Fuss Bus button to `child-dashboard.html` with loading spinner pattern
-- [ ] Add Fuss Bus card to `advanced-tools-grid.html` in "Insights & Reports" section
-- [ ] Integrate with existing `PatternAlertsService` and `TodaySummaryService` (or `DashboardSummaryService`) for auto-check data
-- [ ] Implement age filtering using child's `date_of_birth`
-- [ ] Implement back navigation with state preservation
-- [ ] Implement "Start Over" reset
-- [ ] Implement 5-minute timer for self-care emphasis (using `afterNextRender` + `setTimeout`, cleared on destroy)
-- [ ] Style using design system tokens (rose/amber palette, Fredoka headings, radio-card pattern)
-- [ ] Ensure SSR compatibility (`typeof window` checks for timer)
-- [ ] Add `prefers-reduced-motion` support for any step transition animations
+- [x] Create `FussBusComponent` at `features/fuss-bus/fuss-bus.ts` with 3-step wizard state management
+- [x] Create `SymptomSelectionComponent` (Step 1) with 4 large radio-card tap targets
+- [x] Create `SmartChecklistComponent` (Step 2) with auto-check + manual items and inline "Log now" shortcuts
+- [x] Create `SuggestionsComponent` (Step 3) with prioritized suggestions, soothing toolkit, doctor section, self-care
+- [x] Create `StepIndicatorComponent` — 3-step progress bar
+- [x] Create `DefinitionOverlayComponent` used for glossary terms and lullaby lyrics
+- [x] Create `fuss-bus.data.ts` — all content data (causes, solutions, age ranges, soothing toolkit, glossary, lullaby lyrics) as typed constants
+- [x] Create `fuss-bus.utils.ts` — age calculation, threshold logic, suggestion prioritization
+- [x] Add route `/children/:childId/fuss-bus` to children routing module
+- [x] Add Fuss Bus button to `child-dashboard.html` with loading spinner pattern
+- [x] Add Fuss Bus card to `advanced-tools-grid.html` in "Insights & Reports" section
+- [x] Integrate with existing analytics services (`dashboard-summary`, `pattern-alerts`, timeline) for auto-check data
+- [x] Implement age filtering using child's `date_of_birth`
+- [x] Implement back navigation with state preservation
+- [x] Implement "Start Over" reset
+- [x] Implement 5-minute timer for self-care emphasis (using `afterNextRender` + `setTimeout`, cleared on destroy)
+- [x] Style using design system tokens (rose/amber palette, Fredoka headings, radio-card pattern)
+- [x] Ensure SSR compatibility (`typeof window` checks for timer)
+- [x] Add `prefers-reduced-motion` support for any step transition animations where applicable
 
 ### Testing
 
