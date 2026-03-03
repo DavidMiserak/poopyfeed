@@ -2,13 +2,13 @@
 
 ## Overview
 
-This specification defines requirements for bringing the **back-end submodule’s Django template-rendered Web UI** to feature parity with the **front-end (Angular)** application. Users who access the site via the backend only (e.g. `http://localhost:8000`) shall be able to perform the same workflows as on the Angular app: child dashboard with today summary and recent activity, analytics and export, catch-up mode, and unified timeline.
+This specification defines requirements for bringing the **back-end submodule’s Django template-rendered Web UI** to feature parity with the **front-end (Angular)** application. Users who access the site via the backend only (e.g. `http://localhost:8000`) shall be able to perform the same workflows as on the Angular app: child dashboard with pattern alerts, analytics and export, catch-up mode, unified timeline, pediatrician summary, notifications, and quiet hours.
 
-**User value:** Caregivers using the server-rendered backend UI get the same capabilities as the SPA—single-child dashboard, today’s summary, recent activity, analytics, data export, catch-up logging, and timeline—without requiring the front-end stack.
+**User value:** Caregivers using the server-rendered backend UI get the same capabilities as the SPA—child dashboard with pattern alerts, today’s summary, recent activity, analytics, data export, catch-up logging, timeline, pediatrician summary, in-app notifications, and quiet hours—without requiring the front-end stack.
 
 **Scope:** Back-end only. No API or front-end changes. All data and permissions use existing APIs or server-side equivalents (same models, permissions, and analytics/export logic).
 
-**Implementation status:** Complete for Phase 1–3 (dashboard, timeline, analytics, export, catch-up) and optional tracking list filtering (date range and type).
+**Implementation status:** Complete for Phase 1–3 (dashboard, timeline, analytics, export, catch-up). Phase 4 (pattern alerts, pediatrician summary, notifications, quiet hours) in progress or planned.
 
 ---
 
@@ -16,18 +16,24 @@ This specification defines requirements for bringing the **back-end submodule’
 
 <!-- markdownlint-disable MD060 -->
 
-| Area                  | Back-end template UI                                        | Front-end (Angular)                                  |
-| --------------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
-| Auth                  | ✅ Login, signup, account settings (allauth)                | ✅ Same                                              |
-| Children              | ✅ List, add, edit, delete, sharing, invites, accept-invite | ✅ Same                                              |
-| Per-child entry point | ✅ Child name → dashboard; card shows “Open dashboard”      | ✅ Child dashboard (hub) then lists                  |
-| Child dashboard       | ✅ Today summary, recent activity, quick actions, nav       | ✅ Same                                              |
-| Tracking (F/D/N)      | ✅ List, add, edit, delete (per type)                       | ✅ Same                                              |
-| Analytics             | ✅ Tables (7/14/30 days)                                    | ✅ Analytics dashboard (charts/trends)               |
-| Export                | ✅ CSV immediate, PDF queue + status (meta refresh poll)    | ✅ Export page (CSV/PDF, date range, poll, download) |
-| Catch-up              | ✅ Date range + event timeline; links to add F/D/N          | ✅ Catch-up page (time window, event timeline)       |
-| Timeline              | ✅ Merged feed, pagination                                  | ✅ Unified activity feed (all types, one list)       |
-| Tracking list filter  | ✅ Date range + type (feedings/diapers); date range (naps)  | ✅ Filter by type and date                           |
+| Area                   | Back-end template UI                                        | Front-end (Angular)                                  |
+| ---------------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
+| Auth                   | ✅ Login, signup, account settings (allauth)                | ✅ Same                                              |
+| Children               | ✅ List, add, edit, delete, sharing, invites, accept-invite | ✅ Same                                              |
+| Per-child entry point  | ✅ Child name → dashboard; card shows “Open dashboard”      | ✅ Child dashboard (hub) then lists                  |
+| Child dashboard        | ✅ Today summary, recent activity, quick actions, nav       | ✅ Pattern alerts, same                              |
+| Tracking (F/D/N)       | ✅ List, add, edit, delete (per type)                       | ✅ Same                                              |
+| Pattern alerts         | 🔄 Display on dashboard (in progress)                       | ✅ Dashboard alerts + notifications                  |
+| Analytics              | ✅ Tables (7/14/30 days)                                    | ✅ Analytics dashboard (charts/trends)               |
+| Pediatrician summary   | 🔄 Printable report (planned)                               | ✅ Report with trends and stats                      |
+| Export                 | ✅ CSV immediate, PDF queue + status (meta refresh poll)    | ✅ Export page (CSV/PDF, date range, poll, download) |
+| Catch-up               | ✅ Date range + event timeline; links to add F/D/N          | ✅ Catch-up page (time window, event timeline)       |
+| Timeline               | ✅ Merged feed, pagination                                  | ✅ Unified activity feed (all types, one list)       |
+| Tracking list filter   | ✅ Date range + type (feedings/diapers); date range (naps)  | ✅ Filter by type and date                           |
+| Notifications          | 🔄 In-app notification list (planned)                       | ✅ Notification center with unread badge             |
+| Quiet hours            | 🔄 Account settings UI (planned)                            | ✅ Configurable in account settings                  |
+| Timezone-aware display | ✅ UTC → local timezone conversion                          | ✅ Same                                              |
+| Accessibility          | 🔄 WCAG 2.1 AA (in progress)                                | ✅ WCAG 2.1 AA compliance                            |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -35,10 +41,11 @@ This specification defines requirements for bringing the **back-end submodule’
 
 ## Decisions (resolved)
 
-1. **Priority / phasing** — Delivered in three phases:
+1. **Priority / phasing** — Delivered in four phases:
     - **Phase 1:** Child dashboard, timeline.
     - **Phase 2:** Analytics dashboard (read-only), Export page.
     - **Phase 3:** Catch-up page. Tracking list filtering left as optional (not implemented).
+    - **Phase 4:** Pattern alerts on dashboard, pediatrician summary, in-app notifications, quiet hours, accessibility improvements.
 
 2. **Child list navigation** — **A.** Child name links to child dashboard; card footer shows “Open dashboard.” No separate Diapers/Naps/Feedings buttons on the list card; those are reached from the dashboard.
 
@@ -101,6 +108,35 @@ This specification defines requirements for bringing the **back-end submodule’
 - **FR-FILTER-001** — Filter tracking lists
   When the user is on a tracking list (feedings, diapers, or naps), the system shall allow filtering by date range (and optionally by type where applicable, e.g. diaper change type) so that the list shows only matching records.
 
+### Pattern alerts
+
+- **FR-ALERT-001** — Display pattern alerts on dashboard
+  When the user views the child dashboard, if pattern alerts exist (e.g. overdue feeding, nap wake-window warning), the system shall display them prominently with a clear message and relevant action links.
+
+### Pediatrician summary
+
+- **FR-PED-001** — Pediatrician summary page
+  When the user opens the pediatrician summary page for a child (e.g. `children/<id>/pediatrician-summary/`), the system shall display a printable report aggregating recent feeding trends, diaper patterns, sleep summary, and key statistics for that period (e.g. 30 days).
+
+- **FR-PED-002** — Summary print/export
+  When the user views the pediatrician summary, the system shall provide a print-friendly layout (no nav, full width) and shall allow printing or saving as PDF via browser print dialog.
+
+### Notifications
+
+- **FR-NOT-001** — Notifications center
+  When the user opens the notifications center (e.g. `account/notifications/`), the system shall display a paginated list of in-app notifications (pattern alerts, reminders, system messages) with unread count badge on the nav/account menu.
+
+- **FR-NOT-002** — Mark notification as read
+  When the user clicks a notification in the list, the system shall mark it as read and navigate to the related context (e.g. child dashboard for a pattern alert) or show the message details.
+
+### Quiet hours
+
+- **FR-QH-001** — Configure quiet hours
+  When the user is on the account settings page, the system shall show a form to configure quiet hours (start time and end time) to suppress notifications during that window; when the user saves, the system shall store the preference.
+
+- **FR-QH-002** — Enforce quiet hours
+  When a notification would be shown and the current time falls within the user's quiet hours, the system shall suppress the notification display (but may queue it for later display or in-app review).
+
 ---
 
 ## Non-functional requirements
@@ -121,6 +157,18 @@ This specification defines requirements for bringing the **back-end submodule’
 - Export PDF flow shall use the existing Celery task and export-status/download endpoints; the template UI only orchestrates form submit, polling, and download.
 - All user-facing errors (validation, 403, 404, export failure) shall be shown with clear messages; no raw stack traces in production.
 - New pages shall follow existing back-end conventions: extend `_base.html`, use same nav/header, and match existing template structure and styling (e.g. Bootstrap 5, existing CSS).
+
+### Accessibility
+
+- All template pages shall meet WCAG 2.1 AA contrast ratios, use semantic HTML, and include ARIA labels for interactive elements.
+- Forms, tables, and lists shall be keyboard-navigable; focus indicators shall be visible.
+- Timezone conversion shall be explicit and clear in all displayed timestamps (e.g. "2:30 PM local time").
+
+### Performance and caching
+
+- Dashboard, timeline, and analytics views shall use cached or efficient server-side queries to minimize database load and API calls.
+- Pattern alerts shall be fetched via the same backend API/cache as the front-end to ensure consistency.
+- Notifications list shall paginate results to avoid loading all notifications at once.
 
 ---
 
@@ -198,19 +246,65 @@ Given the user has submitted a PDF export and is on the export status page
 When the PDF job fails
 Then the error message from the API is displayed, polling stops, and the user can retry or return to the export page.
 
+### AC-013: Pattern alert displayed on dashboard
+
+Given a child has an overdue feeding or nap wake-window warning
+When the user views the child dashboard
+Then the pattern alert is displayed prominently with the alert message and relevant action links.
+
+### AC-014: Open pediatrician summary
+
+Given the user is on the child dashboard
+When they click "Pediatrician summary"
+Then the report page is shown with feeding trends, diaper patterns, sleep summary, and key statistics for the default period (e.g. 30 days).
+
+### AC-015: Print pediatrician summary
+
+Given the user is on the pediatrician summary page
+When they click Print or use the browser print dialog
+Then a print-friendly version is shown without navigation; the user can save as PDF via browser.
+
+### AC-016: View notifications center
+
+Given the user is authenticated
+When they click the notifications icon or link in the account menu
+Then the notifications list is shown with all in-app alerts and reminders, unread items highlighted, and pagination for large lists.
+
+### AC-017: Notifications unread badge
+
+Given the user has unread notifications
+When they view the account menu or navigation
+Then an unread count badge is shown on the notifications link.
+
+### AC-018: Configure quiet hours
+
+Given the user is on the account settings page
+When they set quiet hours (e.g. 10 PM to 7 AM) and save
+Then the preference is stored and the user is shown confirmation.
+
+### AC-019: Quiet hours suppress notifications
+
+Given a user has configured quiet hours from 10 PM to 7 AM
+When a notification would be triggered at 11 PM
+Then the notification is not displayed but is queued in the notifications center for later review.
+
 ---
 
 ## Error handling
 
-| Error condition            | HTTP / context | User-facing behaviour                                                                  |
-| -------------------------- | -------------- | -------------------------------------------------------------------------------------- |
-| Child not found            | 404            | Show "Child not found" and link back to children list                                  |
-| No permission for child    | 404            | Return 404; show "You don't have access to this child" and link back (no data leakage) |
-| Export CSV validation      | 400 / form     | Show field or message from server response (e.g. invalid days)                         |
-| Export PDF job failed      | —              | Show error from export-status response; stop polling; allow retry or back to export    |
-| Export status poll timeout | —              | Show "Export is taking longer than expected"; offer link to try again or go back       |
-| Catch-up create validation | Form           | Show form errors same as existing tracking add forms                                   |
-| Unauthenticated            | 302 → login    | Redirect to login; return to intended page where supported                             |
+| Error condition                 | HTTP / context | User-facing behaviour                                                                  |
+| ------------------------------- | -------------- | -------------------------------------------------------------------------------------- |
+| Child not found                 | 404            | Show "Child not found" and link back to children list                                  |
+| No permission for child         | 404            | Return 404; show "You don't have access to this child" and link back (no data leakage) |
+| Export CSV validation           | 400 / form     | Show field or message from server response (e.g. invalid days)                         |
+| Export PDF job failed           | —              | Show error from export-status response; stop polling; allow retry or back to export    |
+| Export status poll timeout      | —              | Show "Export is taking longer than expected"; offer link to try again or go back       |
+| Catch-up create validation      | Form           | Show form errors same as existing tracking add forms                                   |
+| Unauthenticated                 | 302 → login    | Redirect to login; return to intended page where supported                             |
+| Pattern alerts API error        | —              | Show cached alerts if available; otherwise hide alerts section                         |
+| Quiet hours time validation     | Form           | Validate start < end; show inline error if invalid                                     |
+| Pediatrician summary generation | —              | Show error message if report generation fails; allow user to retry or go back          |
+| Notifications fetch error       | —              | Show cached notifications if available; otherwise show "Unable to load notifications"  |
 
 ---
 
@@ -262,6 +356,39 @@ Then the error message from the API is displayed, polling stops, and the user ca
 - [x] **Docs**
     - [x] Update `back-end/CLAUDE.md` with template UI URLs and view names (Dashboard, Timeline, Analytics, Export, Catch-up).
 
+### Phase 4: Pattern alerts, pediatrician summary, notifications, and quiet hours
+
+- [ ] **Pattern alerts on dashboard**
+    - [ ] Fetch pattern alerts via existing API/cache and display on child dashboard.
+    - [ ] Render alerts prominently with message and action links.
+    - [ ] Test: alerts appear on dashboard when present; hidden when none.
+
+- [ ] **Pediatrician summary page**
+    - [ ] Create `ChildPediatricianSummaryView`; aggregate feeding trends, diaper patterns, sleep summary.
+    - [ ] Template: print-friendly layout (no nav); include date range selector if needed.
+    - [ ] Test: summary page loads, data matches analytics API, print layout renders correctly.
+
+- [ ] **Notifications center**
+    - [ ] Create `NotificationsListView` (paginated).
+    - [ ] Fetch notifications from backend (in-app notification model or API).
+    - [ ] Template: notification list with unread badge on nav; mark-as-read action.
+    - [ ] Test: notifications appear, unread badge shows, mark-as-read works.
+
+- [ ] **Quiet hours in account settings**
+    - [ ] Add quiet hours form to account settings (start time, end time).
+    - [ ] Store preference in user profile or settings model.
+    - [ ] Enforce quiet hours when triggering notifications (suppress display if within window).
+    - [ ] Test: quiet hours form submits, time validation works, notifications suppressed during quiet window.
+
+- [ ] **Accessibility improvements**
+    - [ ] Audit all template pages for WCAG 2.1 AA: contrast ratios, semantic HTML, ARIA labels.
+    - [ ] Ensure keyboard navigation and visible focus indicators.
+    - [ ] Explicit timezone display in all timestamps.
+    - [ ] Test: keyboard navigation, screen reader compatibility, contrast validation.
+
+- [ ] **Docs**
+    - [ ] Update `back-end/CLAUDE.md` with new template URLs (Pediatrician Summary, Notifications, Account Quiet Hours).
+
 ---
 
 ## Out of scope
@@ -275,13 +402,17 @@ Then the error message from the API is displayed, polling stops, and the user ca
 
 ## Open questions
 
-- None; decisions are resolved and implementation is complete for Phase 1–3.
+- None; decisions are resolved for Phase 1–3. Phase 4 features are planned and ready for implementation.
 
 ---
 
 ## References
 
+- Frontend feature inventory: `docs/specs/frontend-feature-inventory.spec.md`
 - Back-end Web UI: `back-end/children/views.py`, `back-end/children/urls.py`, `back-end/children/tracking_views.py`, `back-end/templates/`.
 - Front-end routes and features: `front-end/poopyfeed/src/app/app.routes.ts`, child dashboard and analytics/export/catch-up/timeline components.
 - API: `back-end/django_project/api_urls.py`, `back-end/analytics/views.py`, `back-end/children/batch_api.py` (catch-up batch).
-- Android parity spec (phasing style): `specs/android-feature-parity.spec.md`.
+- Pattern alerts spec: `docs/specs/pattern-alerts.spec.md`
+- Notifications spec: `docs/specs/notifications.spec.md`
+- Pediatrician summary spec: `docs/specs/pediatrician-summary.spec.md`
+- Android parity spec (phasing style): `docs/specs/android-feature-parity.spec.md`
