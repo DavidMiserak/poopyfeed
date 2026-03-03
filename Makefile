@@ -255,9 +255,9 @@ redis-flush:
 	@read -p "Type 'yes' to confirm: " confirm; \
 	if [ "$$confirm" = "yes" ]; then \
 		$(RUNTIME) compose exec redis redis-cli FLUSHALL; \
-		@echo "Redis cleared!"; \
+		echo "Redis cleared!"; \
 	else \
-		@echo "Cancelled."; \
+		echo "Cancelled."; \
 	fi
 
 .PHONY: celery-worker
