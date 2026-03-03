@@ -17,6 +17,8 @@ screens to improve perceived performance during data loading.
 - **Maria (Nanny)**: Visual skeleton layout confirms she's on the right page before data loads,
   reducing confusion during quick check-ins between tasks.
 
+**Implementation status:** Fully implemented and complete (backend: `dashboard-summary` endpoint, 5-min cache, invalidation; frontend: batch call, section skeletons, aria attributes).
+
 ---
 
 ## Baseline (March 2026)
@@ -257,32 +259,32 @@ Then skeleton placeholder elements are present in the document
 
 ### Backend
 
-- [ ] Create `DashboardSummaryView` in `analytics/views.py` (or new file)
-- [ ] Reuse `get_today_summary()`, `get_weekly_summary()` utility functions
-- [ ] Query `Notification.objects.filter(recipient=user, is_read=False).count()` for unread
-- [ ] Add `HasChildAccess` permission check
-- [ ] Add 5-minute cache with key `analytics:dashboard-summary:{child_id}`
-- [ ] Register cache key in `invalidate_child_cache()` for signal-based invalidation
-- [ ] Add URL route: `children/<pk>/dashboard-summary/` in `api_urls.py`
-- [ ] Write tests: permission check, response structure, cache behavior, cache invalidation
+- [x] Create `DashboardSummaryView` in `analytics/views.py` (or new file)
+- [x] Reuse `get_today_summary()`, `get_weekly_summary()` utility functions
+- [x] Query `Notification.objects.filter(recipient=user, is_read=False).count()` for unread
+- [x] Add `HasChildAccess` permission check
+- [x] Add 5-minute cache with key `analytics:dashboard-summary:{child_id}`
+- [x] Register cache key in `invalidate_child_cache()` for signal-based invalidation
+- [x] Add URL route: `children/<pk>/dashboard-summary/` in `api_urls.py`
+- [x] Write tests: permission check, response structure, cache behavior, cache invalidation
 
 ### Frontend
 
-- [ ] Add `getDashboardSummary(childId)` method to analytics or children service
-- [ ] Create `DashboardSkeletonComponent` (standalone, pure template + Tailwind CSS)
-- [ ] Add shimmer animation CSS (Tailwind `animate-pulse` or custom keyframes)
-- [ ] Update dashboard component to use batch endpoint for today/weekly/unread
-- [ ] Add `isLoading` signals per dashboard section
-- [ ] Show skeletons while `isLoading()` is true, real content when false
-- [ ] Add `aria-busy` and `aria-label` to skeleton containers
-- [ ] Ensure skeleton dimensions match loaded content (prevent CLS)
-- [ ] Write tests: skeleton renders during loading, replaced on data arrival, aria attributes
+- [x] Add `getDashboardSummary(childId)` method to analytics or children service
+- [x] Create `DashboardSkeletonComponent` (standalone, pure template + Tailwind CSS)
+- [x] Add shimmer animation CSS (Tailwind `animate-pulse` or custom keyframes)
+- [x] Update dashboard component to use batch endpoint for today/weekly/unread
+- [x] Add `isLoading` signals per dashboard section
+- [x] Show skeletons while `isLoading()` is true, real content when false
+- [x] Add `aria-busy` and `aria-label` to skeleton containers
+- [x] Ensure skeleton dimensions match loaded content (prevent CLS)
+- [x] Write tests: skeleton renders during loading, replaced on data arrival, aria attributes
 
 ### Testing
 
-- [ ] Backend unit tests for `DashboardSummaryView` (8–10 tests)
-- [ ] Frontend unit tests for skeleton component (3–5 tests)
-- [ ] Frontend unit tests for batch endpoint integration (3–5 tests)
+- [x] Backend unit tests for `DashboardSummaryView` (8–10 tests)
+- [x] Frontend unit tests for skeleton component (3–5 tests)
+- [x] Frontend unit tests for batch endpoint integration (3–5 tests)
 - [ ] Lighthouse re-audit after implementation to measure SI improvement
 - [ ] Manual CLS verification (Chrome DevTools > Performance > Layout Shifts)
 
