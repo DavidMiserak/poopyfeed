@@ -8,7 +8,7 @@ This specification defines requirements for bringing the **back-end submodule’
 
 **Scope:** Back-end only. No API or front-end changes. All data and permissions use existing APIs or server-side equivalents (same models, permissions, and analytics/export logic).
 
-**Implementation status:** Complete for Phase 1–3 (dashboard, timeline, analytics, export, catch-up). Phase 4 (pattern alerts, pediatrician summary, notifications, quiet hours) in progress or planned.
+**Implementation status:** Complete for Phase 1–4 (dashboard, timeline, analytics, export, catch-up, pattern alerts, pediatrician summary, notifications, quiet hours). Accessibility improvements (WCAG 2.1 AA audit, keyboard nav, timezone in timestamps) are partially done and may be refined further.
 
 ---
 
@@ -16,24 +16,24 @@ This specification defines requirements for bringing the **back-end submodule’
 
 <!-- markdownlint-disable MD060 -->
 
-| Area                   | Back-end template UI                                        | Front-end (Angular)                                  |
-| ---------------------- | ----------------------------------------------------------- | ---------------------------------------------------- |
-| Auth                   | ✅ Login, signup, account settings (allauth)                | ✅ Same                                              |
-| Children               | ✅ List, add, edit, delete, sharing, invites, accept-invite | ✅ Same                                              |
-| Per-child entry point  | ✅ Child name → dashboard; card shows “Open dashboard”      | ✅ Child dashboard (hub) then lists                  |
-| Child dashboard        | ✅ Today summary, recent activity, quick actions, nav       | ✅ Pattern alerts, same                              |
-| Tracking (F/D/N)       | ✅ List, add, edit, delete (per type)                       | ✅ Same                                              |
-| Pattern alerts         | 🔄 Display on dashboard (in progress)                       | ✅ Dashboard alerts + notifications                  |
-| Analytics              | ✅ Tables (7/14/30 days)                                    | ✅ Analytics dashboard (charts/trends)               |
-| Pediatrician summary   | 🔄 Printable report (planned)                               | ✅ Report with trends and stats                      |
-| Export                 | ✅ CSV immediate, PDF queue + status (meta refresh poll)    | ✅ Export page (CSV/PDF, date range, poll, download) |
-| Catch-up               | ✅ Date range + event timeline; links to add F/D/N          | ✅ Catch-up page (time window, event timeline)       |
-| Timeline               | ✅ Merged feed, pagination                                  | ✅ Unified activity feed (all types, one list)       |
-| Tracking list filter   | ✅ Date range + type (feedings/diapers); date range (naps)  | ✅ Filter by type and date                           |
-| Notifications          | 🔄 In-app notification list (planned)                       | ✅ Notification center with unread badge             |
-| Quiet hours            | 🔄 Account settings UI (planned)                            | ✅ Configurable in account settings                  |
-| Timezone-aware display | ✅ UTC → local timezone conversion                          | ✅ Same                                              |
-| Accessibility          | 🔄 WCAG 2.1 AA (in progress)                                | ✅ WCAG 2.1 AA compliance                            |
+| Area                   | Back-end template UI                                                  | Front-end (Angular)                                  |
+| ---------------------- | --------------------------------------------------------------------- | ---------------------------------------------------- |
+| Auth                   | ✅ Login, signup, account settings (allauth)                          | ✅ Same                                              |
+| Children               | ✅ List, add, edit, delete, sharing, invites, accept-invite           | ✅ Same                                              |
+| Per-child entry point  | ✅ Child name → dashboard; card shows “Open dashboard”                | ✅ Child dashboard (hub) then lists                  |
+| Child dashboard        | ✅ Today summary, pattern alerts, recent activity, quick actions, nav | ✅ Pattern alerts, same                              |
+| Tracking (F/D/N)       | ✅ List, add, edit, delete (per type)                                 | ✅ Same                                              |
+| Pattern alerts         | ✅ Display on dashboard (feeding/nap overdue warnings)                | ✅ Dashboard alerts + notifications                  |
+| Analytics              | ✅ Tables (7/14/30 days)                                              | ✅ Analytics dashboard (charts/trends)               |
+| Pediatrician summary   | ✅ Printable 7-day report (child_pediatrician_summary)                | ✅ Report with trends and stats                      |
+| Export                 | ✅ CSV immediate, PDF queue + status (meta refresh poll)              | ✅ Export page (CSV/PDF, date range, poll, download) |
+| Catch-up               | ✅ Date range + event timeline; links to add F/D/N                    | ✅ Catch-up page (time window, event timeline)       |
+| Timeline               | ✅ Merged feed, pagination                                            | ✅ Unified activity feed (all types, one list)       |
+| Tracking list filter   | ✅ Date range + type (feedings/diapers); date range (naps)            | ✅ Filter by type and date                           |
+| Notifications          | ✅ In-app list (/notifications/), mark read, unread badge in nav      | ✅ Notification center with unread badge             |
+| Quiet hours            | ✅ Account settings form (enabled, start/end time)                    | ✅ Configurable in account settings                  |
+| Timezone-aware display | ✅ UTC → local timezone conversion                                    | ✅ Same                                              |
+| Accessibility          | 🔄 WCAG 2.1 AA (in progress)                                          | ✅ WCAG 2.1 AA compliance                            |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -358,27 +358,27 @@ Then the notification is not displayed but is queued in the notifications center
 
 ### Phase 4: Pattern alerts, pediatrician summary, notifications, and quiet hours
 
-- [ ] **Pattern alerts on dashboard**
-    - [ ] Fetch pattern alerts via existing API/cache and display on child dashboard.
-    - [ ] Render alerts prominently with message and action links.
-    - [ ] Test: alerts appear on dashboard when present; hidden when none.
+- [x] **Pattern alerts on dashboard**
+    - [x] Fetch pattern alerts via existing API/cache and display on child dashboard.
+    - [x] Render alerts prominently with message and action links.
+    - [x] Test: alerts appear on dashboard when present; hidden when none.
 
-- [ ] **Pediatrician summary page**
-    - [ ] Create `ChildPediatricianSummaryView`; aggregate feeding trends, diaper patterns, sleep summary.
-    - [ ] Template: print-friendly layout (no nav); include date range selector if needed.
-    - [ ] Test: summary page loads, data matches analytics API, print layout renders correctly.
+- [x] **Pediatrician summary page**
+    - [x] Create `ChildPediatricianSummaryView`; aggregate feeding trends, diaper patterns, sleep summary.
+    - [x] Template: print-friendly layout (no nav); include date range selector if needed.
+    - [x] Test: summary page loads, data matches analytics API, print layout renders correctly.
 
-- [ ] **Notifications center**
-    - [ ] Create `NotificationsListView` (paginated).
-    - [ ] Fetch notifications from backend (in-app notification model or API).
-    - [ ] Template: notification list with unread badge on nav; mark-as-read action.
-    - [ ] Test: notifications appear, unread badge shows, mark-as-read works.
+- [x] **Notifications center**
+    - [x] Create `NotificationsListView` (paginated).
+    - [x] Fetch notifications from backend (in-app notification model or API).
+    - [x] Template: notification list with unread badge on nav; mark-as-read action.
+    - [x] Test: notifications appear, unread badge shows, mark-as-read works.
 
-- [ ] **Quiet hours in account settings**
-    - [ ] Add quiet hours form to account settings (start time, end time).
-    - [ ] Store preference in user profile or settings model.
-    - [ ] Enforce quiet hours when triggering notifications (suppress display if within window).
-    - [ ] Test: quiet hours form submits, time validation works, notifications suppressed during quiet window.
+- [x] **Quiet hours in account settings**
+    - [x] Add quiet hours form to account settings (start time, end time).
+    - [x] Store preference in user profile or settings model.
+    - [x] Enforce quiet hours when triggering notifications (suppress display if within window).
+    - [x] Test: quiet hours form submits, time validation works, notifications suppressed during quiet window.
 
 - [ ] **Accessibility improvements**
     - [ ] Audit all template pages for WCAG 2.1 AA: contrast ratios, semantic HTML, ARIA labels.
@@ -402,7 +402,7 @@ Then the notification is not displayed but is queued in the notifications center
 
 ## Open questions
 
-- None; decisions are resolved for Phase 1–3. Phase 4 features are planned and ready for implementation.
+- None; decisions are resolved for Phases 1–4. Phase 4 (pattern alerts, pediatrician summary, notifications, quiet hours) is implemented; accessibility improvements remain optional for further refinement.
 
 ---
 
