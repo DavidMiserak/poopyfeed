@@ -51,12 +51,24 @@ run:
 	@echo "Starting PoopyFeed services..."
 	$(RUNTIME) compose up -d --build
 	@echo ""
+	@echo "Waiting for backend to be ready..."
+	@$(MAKE) wait-for-backend
+	@echo ""
 	@echo "Services started!"
 	@echo "- Front-end: http://localhost:4200"
 	@echo "- Back-end API: http://localhost:8000/api/v1/"
 	@echo "- Django Admin: http://localhost:8000/admin/"
 	@echo ""
 	@echo "Run 'make logs' to view logs"
+
+.PHONY: wait-for-backend
+wait-for-backend:
+	@for i in $$(seq 1 30); do \
+		curl -s -o /dev/null http://localhost:8000/api/v1/ 2>/dev/null && echo "Backend is ready." && exit 0; \
+		sleep 2; \
+	done; \
+	echo "Backend failed to start within 60 seconds"; \
+	exit 1
 
 .PHONY: stop
 stop:
@@ -95,7 +107,7 @@ migrate:
 test-backend:
 	@echo "======================================"
 	@echo "Running back-end tests with coverage"
-	@echo "Expected: ~53 seconds, 100% pass rate"
+	@echo "Expected: ~120 seconds, 100% pass rate"
 	@echo "Use case: CI/CD pipeline + full coverage verification"
 	@echo "======================================"
 	$(RUNTIME) compose exec backend coverage run manage.py test
