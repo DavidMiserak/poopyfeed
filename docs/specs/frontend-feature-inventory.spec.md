@@ -37,7 +37,7 @@ Snapshot date: **2026-03-03**
 
 - **Child list and selection**
     - **Route**: `/children`
-    - **Description**: Lists all children the user can access, including role badges and last-activity summaries (last feeding/diaper/nap).
+    - **Description**: Lists all children the user can access, including role badges and last-activity summaries (last feeding/diaper/nap). An **Overdue** pill appears next to a child’s last activity when feeding is past the child’s reminder interval.
 - **Child dashboard**
     - **Route**: `/children/:id/dashboard`
     - **Description**: Primary hub for a single child, summarizing recent activity, pattern alerts, and quick actions for tracking.
@@ -65,7 +65,7 @@ Snapshot date: **2026-03-03**
 
 - **Child timeline**
     - **Route**: `/children/:id/timeline`
-    - **Description**: Unified chronological timeline of feedings, diapers, and naps with relative time labels (e.g., “2 hours ago”) and activity-specific icons.
+    - **Description**: Unified chronological timeline of feedings, diapers, and naps with relative time labels (e.g., “2 hours ago”) and activity-specific icons. Time gaps between activities are shown; for gaps of 60 minutes or more, owners and co-parents can add a nap in place via an “Add nap” action that creates a nap spanning the gap.
 
 ### 5. Analytics, Patterns, and Export
 
