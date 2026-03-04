@@ -83,6 +83,10 @@ Snapshot date: **2026-03-03**
     - **Related spec**: `pattern-alerts.spec.md`
 - **Advanced tools hub**
     - **Description**: Consolidated “advanced tools” area (e.g., analytics variants, exports, filters) for power users, with filtering and navigation helpers.
+- **Fuss Bus**
+    - **Route**: `/children/:id/fuss-bus`
+    - **Description**: Guided troubleshooting wizard to help identify causes of a child's fussiness (crying, won't sleep, general fussiness, or refusing food for 12+ months), with a smart checklist that auto-checks recent feedings, diapers, and naps from tracking data and targeted soothing suggestions. Accessible from the child dashboard and Advanced Tools grid.
+    - **Related spec**: `fuss-bus.spec.md`
 
 ### 6. Notifications, Reminders, and Quiet Hours
 
