@@ -195,6 +195,7 @@ make pre-commit-setup  # Install hooks
 ## Documentation
 
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** - Full deployment guide
+- **[back-end/README.md](back-end/README.md)** - Backend (Django) documentation and commands
 - **[front-end/docs/API.md](front-end/docs/API.md)** - REST API reference
 - **[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** - Design system
 - **[docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)** - All app screenshots
