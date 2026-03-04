@@ -2,7 +2,7 @@
 
 ## Overview
 
-This specification defines requirements for bringing the Android app to feature parity with the Angular front-end. The work is delivered in phases: Phase 1 (core tracking and child CRUD), Phase 2 (sharing and invites), Phase 3 (analytics, patterns, and export), Phase 4 (catch-up, timeline, notifications, and polish).
+This specification defines requirements for bringing the Android app to feature parity with the Angular front-end. The work is delivered in phases: Phase 1 (core tracking and child CRUD), Phase 2 (sharing and invites), Phase 3 (analytics, patterns, export, and Fuss Bus), Phase 4 (catch-up, timeline, notifications, and polish).
 
 **User value:** Caregivers can use the native Android app to perform the same actions as on the web: manage children, log feedings/diapers/naps, manage sharing, accept invites, view pattern alerts, receive push notifications and reminders, and export data.
 
@@ -37,7 +37,8 @@ This specification defines requirements for bringing the Android app to feature 
 - **FR-12** When the user requests CSV export, the system shall call the export API and save the response to app cache and open it with the system handler (e.g. viewer or share).
 - **FR-13** While viewing a child dashboard, when the backend returns pattern alerts (overdue feedings, nap wake-window warnings), the system shall display them prominently on the dashboard.
 - **FR-14** While viewing a child, when the user opens "Pediatrician summary", the system shall generate a printable report aggregating recent trends and key stats and allow sharing or saving as PDF.
-- **FR-15** While viewing a child, when the user opens "Advanced tools", the system shall show a hub screen with links to analytics, exports, pediatrician summary, and filtering options.
+- **FR-15** While viewing a child, when the user opens "Advanced tools", the system shall show a hub screen with links to analytics, exports, pediatrician summary, Fuss Bus, and filtering options.
+- **FR-15a** While viewing a child, when the user opens "Fuss Bus" (from the child dashboard or Advanced tools hub), the system shall show the Fuss Bus wizard: symptom selection (crying, won't sleep, general fussiness; "Refusing food" only for children 12+ months), smart checklist using pattern-alerts, dashboard summary, and timeline data, then targeted suggestions; all roles that can view the child shall be able to access it (no new backend; use existing APIs).
 
 ### Notifications, reminders, and quiet hours
 
@@ -68,23 +69,24 @@ This specification defines requirements for bringing the Android app to feature 
 
 <!-- markdownlint-disable MD060 -->
 
-| ID   | Given                           | When                                      | Then                                                             |
-| ---- | ------------------------------- | ----------------------------------------- | ---------------------------------------------------------------- |
-| AC1  | User is on children list        | User taps FAB "Add child"                 | Add-child form is shown                                          |
-| AC2  | User submitted child form       | Create API succeeds                       | User returns to list; new child appears                          |
-| AC3  | User is on child dashboard      | User taps "Add feeding"                   | Feeding create screen is shown                                   |
-| AC4  | User submitted feeding          | Create API succeeds                       | User returns to dashboard; summary updates                       |
-| AC5  | User is on sharing screen       | User creates invite (role CG)             | New invite appears with link                                     |
-| AC6  | User opened invite link         | User taps Accept                          | API is called; on success user sees children list                |
-| AC7  | User is on export screen        | User selects CSV, 30 days, Export         | CSV is downloaded and opened                                     |
-| AC8  | User is on export screen        | User selects PDF, Export                  | Job is queued; status is polled; on completion PDF is downloaded |
-| AC9  | Child has overdue feeding alert | User views child dashboard                | Pattern alert banner is displayed prominently                    |
-| AC10 | User is on child dashboard      | User taps "Pediatrician summary"          | Report is generated with recent trends; share/save options shown |
-| AC11 | User is on child dashboard      | User taps "Advanced tools"                | Hub screen shows links to analytics, export, summary, filters    |
-| AC12 | User is authenticated           | User opens notifications center           | List of alerts and reminders is shown with unread count badge    |
-| AC13 | User is owner/co-parent         | User sets feeding reminder to 3 hours     | Push notification fires when 3 hours since last feeding          |
-| AC14 | User configured quiet hours     | Notification triggers during quiet window | Notification is suppressed until quiet hours end                 |
-| AC15 | Event timestamp is in UTC       | User views timestamp on any screen        | Time is displayed in device local timezone                       |
+| ID   | Given                                        | When                                      | Then                                                                                                                   |
+| ---- | -------------------------------------------- | ----------------------------------------- | ---------------------------------------------------------------------------------------------------------------------- |
+| AC1  | User is on children list                     | User taps FAB "Add child"                 | Add-child form is shown                                                                                                |
+| AC2  | User submitted child form                    | Create API succeeds                       | User returns to list; new child appears                                                                                |
+| AC3  | User is on child dashboard                   | User taps "Add feeding"                   | Feeding create screen is shown                                                                                         |
+| AC4  | User submitted feeding                       | Create API succeeds                       | User returns to dashboard; summary updates                                                                             |
+| AC5  | User is on sharing screen                    | User creates invite (role CG)             | New invite appears with link                                                                                           |
+| AC6  | User opened invite link                      | User taps Accept                          | API is called; on success user sees children list                                                                      |
+| AC7  | User is on export screen                     | User selects CSV, 30 days, Export         | CSV is downloaded and opened                                                                                           |
+| AC8  | User is on export screen                     | User selects PDF, Export                  | Job is queued; status is polled; on completion PDF is downloaded                                                       |
+| AC9  | Child has overdue feeding alert              | User views child dashboard                | Pattern alert banner is displayed prominently                                                                          |
+| AC10 | User is on child dashboard                   | User taps "Pediatrician summary"          | Report is generated with recent trends; share/save options shown                                                       |
+| AC11 | User is on child dashboard                   | User taps "Advanced tools"                | Hub screen shows links to analytics, export, summary, filters                                                          |
+| AC12 | User is authenticated                        | User opens notifications center           | List of alerts and reminders is shown with unread count badge                                                          |
+| AC13 | User is owner/co-parent                      | User sets feeding reminder to 3 hours     | Push notification fires when 3 hours since last feeding                                                                |
+| AC14 | User configured quiet hours                  | Notification triggers during quiet window | Notification is suppressed until quiet hours end                                                                       |
+| AC15 | Event timestamp is in UTC                    | User views timestamp on any screen        | Time is displayed in device local timezone                                                                             |
+| AC16 | User is on child dashboard or Advanced tools | User taps "Fuss Bus"                      | Fuss Bus wizard is shown (symptom selection, checklist, suggestions); content is age-appropriate; all roles can access |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -137,9 +139,10 @@ This specification defines requirements for bringing the Android app to feature 
 - [x] AnalyticsRepository export methods; ExportViewModel (CSV immediate, PDF poll then download)
 - [x] ExportScreen: format (CSV/PDF), days (7/14/30), Export button; FileProvider for opening files
 - [x] Link "Export data" from child dashboard
-- [ ] PatternAlertsApi: fetch alerts for child; display alert banners on dashboard
-- [ ] PediatricianSummaryScreen: generate and display report; share/save as PDF
-- [ ] AdvancedToolsScreen: hub linking analytics, export, pediatrician summary, filters
+- [x] PatternAlertsApi: fetch alerts for child; display alert banners on dashboard
+- [x] PediatricianSummaryScreen: generate and display report; share/save as PDF
+- [x] AdvancedToolsScreen: hub linking analytics, export, pediatrician summary, Fuss Bus, filters
+- [x] Fuss Bus: screen(s) for 3-step wizard (symptom selection, smart checklist, targeted suggestions); entry from child dashboard and Advanced tools; use pattern-alerts, dashboard summary, timeline, and child DOB; age-filtered symptom and checklist items; all roles can access
 
 ### Phase 4: Catch-up, timeline, notifications, and polish
 
@@ -167,4 +170,5 @@ This specification defines requirements for bringing the Android app to feature 
 - Notifications spec: `docs/specs/notifications.spec.md`
 - Feeding reminders spec: `docs/specs/feeding-reminders.spec.md`
 - Pediatrician summary spec: `docs/specs/pediatrician-summary.spec.md`
+- Fuss Bus spec: `docs/specs/fuss-bus.spec.md`
 - Plan: `.cursor/plans/Android front-end feature parity-e7521905.plan.md`
