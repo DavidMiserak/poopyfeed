@@ -86,8 +86,7 @@ poopyfeed/
 ├── front-end/           # Angular 21 frontend (submodule)
 │   ├── poopyfeed/       # Angular application
 │   ├── Containerfile    # Multi-stage Docker build
-│   ├── Makefile         # Frontend commands
-│   └── CLAUDE.md        # Frontend architecture guide
+│   └── Makefile         # Frontend commands
 ├── back-end/            # Django 6.0 backend (submodule)
 │   ├── django_project/  # Django settings
 │   ├── accounts/        # User management
@@ -96,8 +95,7 @@ poopyfeed/
 │   ├── feedings/        # Feeding tracking
 │   ├── naps/            # Nap tracking
 │   ├── Containerfile    # Django container
-│   ├── Makefile         # Backend commands
-│   └── CLAUDE.md        # Backend architecture guide
+│   └── Makefile         # Backend commands
 ├── docs/                # Design and persona documentation
 ├── podman-compose.yaml  # Orchestration (frontend, backend, db, Redis, Celery)
 ├── Makefile             # Root commands
@@ -168,7 +166,7 @@ make run  # Uses podman-compose.yaml
 
 ### Production
 
-- **Backend**: Deploy to Render (see `back-end/CLAUDE.md`)
+- **Backend**: Deploy to Render
 - **Frontend**: Build production image with nginx (see `front-end/Containerfile`)
 
 ## Testing
@@ -197,8 +195,6 @@ make pre-commit-setup  # Install hooks
 ## Documentation
 
 - **[DEPLOYMENT.md](DEPLOYMENT.md)** - Full deployment guide
-- **[back-end/CLAUDE.md](back-end/CLAUDE.md)** - Django architecture
-- **[front-end/CLAUDE.md](front-end/CLAUDE.md)** - Angular architecture
 - **[front-end/docs/API.md](front-end/docs/API.md)** - REST API reference
 - **[docs/DESIGN_SYSTEM.md](docs/DESIGN_SYSTEM.md)** - Design system
 - **[docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)** - All app screenshots
