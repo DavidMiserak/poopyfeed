@@ -6,7 +6,34 @@ x-image-config: &image-config
     REGISTRY: ${REGISTRY:-localhost}
     BACKEND_IMAGE: ${BACKEND_IMAGE:-poopyfeed-be}
     FRONTEND_IMAGE: ${FRONTEND_IMAGE:-poopyfeed-fe}
-    IMAGE_TAG: ${IMAGE_TAG:-latest}
+    IMAGE_TAG: ${IMAGE_TAG:-dev}
+
+x-resource-limits: &resource-limits
+  resources:
+    limits:
+      cpus: "1"
+      memory: 512M
+    reservations:
+      cpus: "0.5"
+      memory: 256M
+
+x-frontend-resource-limits: &frontend-resource-limits
+  resources:
+    limits:
+      cpus: "0.5"
+      memory: 256M
+    reservations:
+      cpus: "0.25"
+      memory: 128M
+
+x-db-resource-limits: &db-resource-limits
+  resources:
+    limits:
+      cpus: "1"
+      memory: 1G
+    reservations:
+      cpus: "0.5"
+      memory: 512M
 
 services:
     # Redis cache & session store
@@ -25,6 +52,7 @@ services:
             interval: 10s
             timeout: 3s
             retries: 3
+        <<: *frontend-resource-limits
 
     # PostgreSQL database
     db:
@@ -36,10 +64,16 @@ services:
             - "POSTGRES_HOST_AUTH_METHOD=trust"
         networks:
             - poopyfeed-network
+        healthcheck:
+            test: ["CMD-SHELL", "pg_isready -U postgres"]
+            interval: 10s
+            timeout: 5s
+            retries: 5
+        <<: *db-resource-limits
 
     # Django back-end
     backend:
-        image: ${REGISTRY:-localhost}/${BACKEND_IMAGE:-poopyfeed-be}:${IMAGE_TAG:-latest}
+        image: ${REGISTRY:-localhost}/${BACKEND_IMAGE:-poopyfeed-be}:${IMAGE_TAG:-dev}
         container_name: poopyfeed-backend
         build:
             context: ./back-end
@@ -51,7 +85,7 @@ services:
         ports:
             - "8000:8000"
         environment:
-            - "DJANGO_SECRET_KEY=change-this-key" # nosec B105
+            - "DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-change-me-in-dev-only}"
             - "DJANGO_DEBUG=True"
             - "RELAX_E2E_THROTTLES=1"
             - "DJANGO_ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,backend"
@@ -70,14 +104,23 @@ services:
             - "CELERY_BROKER_URL=redis://redis:6379/0"
             - "CELERY_RESULT_BACKEND=redis://redis:6379/1"
         depends_on:
-            - db
-            - redis
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+        healthcheck:
+            test: ["CMD", "curl", "-f", "http://localhost:8000/healthz"]
+            interval: 30s
+            timeout: 5s
+            retries: 3
+            start_period: 10s
         networks:
             - poopyfeed-network
+        <<: *resource-limits
 
     # Celery worker for async tasks (PDF generation, etc.)
     celery-worker:
-        image: ${REGISTRY:-localhost}/${BACKEND_IMAGE:-poopyfeed-be}:${IMAGE_TAG:-latest}
+        image: ${REGISTRY:-localhost}/${BACKEND_IMAGE:-poopyfeed-be}:${IMAGE_TAG:-dev}
         container_name: poopyfeed-celery-worker
         build:
             context: ./back-end
@@ -88,7 +131,7 @@ services:
             - ./back-end:/code
             - ./back-end/exports:/code/exports
         environment:
-            - "DJANGO_SECRET_KEY=change-this-key" # nosec B105
+            - "DJANGO_SECRET_KEY=${DJANGO_SECRET_KEY:-change-me-in-dev-only}"
             - "DJANGO_DEBUG=True"
             - "DATABASE_HOST=db"
             - "DATABASE_NAME=postgres"
@@ -99,15 +142,19 @@ services:
             - "CELERY_BROKER_URL=redis://redis:6379/0"
             - "CELERY_RESULT_BACKEND=redis://redis:6379/1"
         depends_on:
-            - db
-            - redis
-            - backend
+            db:
+                condition: service_healthy
+            redis:
+                condition: service_healthy
+            backend:
+                condition: service_healthy
         networks:
             - poopyfeed-network
+        <<: *resource-limits
 
     # Angular front-end
     frontend:
-        image: ${REGISTRY:-localhost}/${FRONTEND_IMAGE:-poopyfeed-fe}:${IMAGE_TAG:-latest}
+        image: ${REGISTRY:-localhost}/${FRONTEND_IMAGE:-poopyfeed-fe}:${IMAGE_TAG:-dev}
         container_name: poopyfeed-frontend
         build:
             context: ./front-end
@@ -123,13 +170,15 @@ services:
             - "NODE_ENV=development"
             - "API_URL=http://backend:8000" # Internal network URL
         depends_on:
-            - backend
+            backend:
+                condition: service_healthy
         networks:
             - poopyfeed-network
+        <<: *frontend-resource-limits
 
     # Android build toolchain (on-demand, not started with `make run`)
     android:
-        image: ${REGISTRY:-localhost}/${ANDROID_IMAGE:-poopyfeed-android}:${IMAGE_TAG:-latest}
+        image: ${REGISTRY:-localhost}/${ANDROID_IMAGE:-poopyfeed-android}:${IMAGE_TAG:-dev}
         container_name: poopyfeed-android
         build:
             context: ./android
@@ -138,6 +187,7 @@ services:
             - android
         networks:
             - poopyfeed-network
+        <<: *resource-limits
 
 networks:
     poopyfeed-network:
