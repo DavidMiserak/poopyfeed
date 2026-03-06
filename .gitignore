@@ -62,6 +62,7 @@ Lighthouse*
 CLAUDE.md
 memory/
 .cursor/
+.claude/
 .agent/
 agent-transcripts/
 terminals/
