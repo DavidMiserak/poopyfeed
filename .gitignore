@@ -43,9 +43,6 @@ coverage/
 htmlcov/
 .nyc_output/
 
-# Lighthouse reports
-lighthouse*
-
 # Temporary files
 tmp/
 temp/
@@ -54,7 +51,19 @@ temp/
 *~
 *.orig
 
+# SonarQube Scanner files
+.scannerwork/
+
+# Lighouse files
+lighthouse*
+Lighthouse*
+
 # AI generated files
 CLAUDE.md
 memory/
 .cursor/
+.agent/
+agent-transcripts/
+terminals/
+.aider*
+aider.chat.*.md
