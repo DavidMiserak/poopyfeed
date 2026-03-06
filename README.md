@@ -1,12 +1,6 @@
 # PoopyFeed
 
 <p align="center">
-  <a href="https://github.com/DavidMiserak/poopyfeed/actions/workflows/test.yml">
-    <img src="https://github.com/DavidMiserak/poopyfeed/actions/workflows/test.yml/badge.svg" alt="Tests" />
-  </a>
-  <a href="https://codecov.io/gh/DavidMiserak/poopyfeed">
-    <img src="https://codecov.io/gh/DavidMiserak/poopyfeed/branch/main/graph/badge.svg" alt="codecov" />
-  </a>
   <img src="https://img.shields.io/badge/python-3.13+-blue.svg" alt="Python 3.13+" />
   <img src="https://img.shields.io/badge/node-20+-green.svg" alt="Node 20+" />
   <img src="https://img.shields.io/badge/django-6.0-darkgreen.svg" alt="Django 6.0" />
@@ -32,11 +26,7 @@ patterns. Built with Django 6.0 (backend) and Angular 21 (frontend).
 
 ## Screenshots
 
-| Sign Up                                           | Dashboard                                                    | Analytics                                             |
-| ------------------------------------------------- | ------------------------------------------------------------ | ----------------------------------------------------- |
-| ![Sign Up](images/mobile-screenshots/sign-up.png) | ![Quick Log](images/mobile-screenshots/dash-2-quick-log.png) | ![Analytics](images/mobile-screenshots/analytics.png) |
-
-See **[docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)** for all screenshots.
+See **[docs/SCREENSHOTS.md](docs/SCREENSHOTS.md)** for app screenshots (sign up, dashboard, analytics, and more).
 
 ## Quick Start
 
@@ -52,7 +42,7 @@ To use Docker instead of Podman, set `RUNTIME=docker` in the root `Makefile` or 
 
 ```bash
 # Clone repository with submodules
-git clone <repo-url>
+git clone https://github.com/DavidMiserak/poopyfeed.git
 cd poopyfeed
 git submodule update --init --recursive
 
@@ -70,6 +60,8 @@ make run
 - **Django Admin**: <http://localhost:8000/admin/>
 
 ### Initial Setup
+
+With `make run` already running:
 
 ```bash
 # Run database migrations
@@ -96,6 +88,7 @@ poopyfeed/
 │   ├── naps/            # Nap tracking
 │   ├── Containerfile    # Django container
 │   └── Makefile         # Backend commands
+├── android/             # Android app (Kotlin)
 ├── docs/                # Design and persona documentation
 ├── podman-compose.yaml  # Orchestration (frontend, backend, db, Redis, Celery)
 ├── Makefile             # Root commands
@@ -121,6 +114,16 @@ make clean            # Stop and remove volumes
 ```
 
 Optional: `make redis-cli`, `make celery-worker`, `make celery-beat` for Redis/Celery inspection or running the scheduler.
+
+### Android
+
+Build and test the Android app (requires `make run` for backend):
+
+```bash
+make build-android    # Build debug APK
+make test-android     # Run unit tests
+make lint-android     # Run lint checks
+```
 
 See [DEPLOYMENT.md](DEPLOYMENT.md) for complete documentation.
 
@@ -166,7 +169,7 @@ make run  # Uses podman-compose.yaml
 
 ### Production
 
-- **Backend**: Deploy to Render
+- **Backend**: Deploy to Render (see [DEPLOYMENT.md](DEPLOYMENT.md))
 - **Frontend**: Build production image with nginx (see `front-end/Containerfile`)
 
 ## Testing
@@ -233,4 +236,4 @@ make pre-commit-setup  # Install hooks
 
 ## License
 
-<!-- Add license information -->
+See the [LICENSE](LICENSE) file for details.
