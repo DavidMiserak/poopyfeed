@@ -2,7 +2,7 @@
 
 ## Overview
 
-This specification defines requirements for bringing the Android app to feature parity with the Angular front-end. The work is delivered in phases: Phase 1 (core tracking and child CRUD), Phase 2 (sharing and invites), Phase 3 (analytics, patterns, export, and Fuss Bus), Phase 4 (catch-up, timeline, notifications, and polish).
+This specification defines requirements for bringing the Android app to feature parity with the Angular front-end. The work is delivered in phases: Phase 1 (core tracking and child CRUD), Phase 2 (sharing and invites), Phase 3 (analytics, patterns, export, and Fuss Bus), Phase 4 (catch-up, timeline, notifications, and polish), Phase 5 (password reset, account profile, quick log, and timeline gap nap), Phase 6 (signup, analytics dashboard, and top-level quick log).
 
 **Source of truth:** The Angular app in `front-end/poopyfeed` is the reference. Routes and capabilities are listed in `docs/specs/frontend-feature-inventory.spec.md` and `front-end/poopyfeed/src/app/app.routes.ts`.
 
@@ -59,6 +59,19 @@ This specification defines requirements for bringing the Android app to feature 
 
 - **FR-21a** While viewing the child timeline, when the user sees a time gap of at least 60 minutes between two activities and has owner or co-parent role, the system shall show an "Add nap" action for that gap; when the user taps it, the system shall create a nap spanning the gap (start/end timestamps) and refresh the timeline.
 
+### Signup
+
+- **FR-22** While unauthenticated, when the user chooses "Sign up" from the greeting screen, the system shall show a registration form (first name, last name, email, password, password confirmation) and on submit create the account via the API, obtain an auth token, and navigate to the children list.
+- **FR-22a** When the registration API returns validation errors (e.g. email already in use, weak password), the system shall display field-level or summary error messages.
+
+### Analytics dashboard
+
+- **FR-23** While viewing a child, when the user opens "Trends & analytics" (from the Advanced tools hub), the system shall show an analytics dashboard with feeding, diaper, and nap trend charts over a configurable time range (7, 14, or 30 days), matching the web analytics dashboard.
+
+### Top-level quick log
+
+- **FR-24** While authenticated with one or more children, when the user triggers a top-level quick log action (e.g. from a notification action or app shortcut), the system shall either auto-select the child (if only one) or prompt the user to choose a child, then open the quick log flow for that child.
+
 ### Timezone and accessibility
 
 - **FR-20** When displaying timestamps, the system shall convert UTC values to the device's local timezone and show human-friendly relative times (e.g., "2 hours ago") where appropriate.
@@ -81,29 +94,34 @@ This specification defines requirements for bringing the Android app to feature 
 
 <!-- markdownlint-disable MD060 -->
 
-| ID   | Given                                         | When                                                 | Then                                                                                                                                  |
-| ---- | --------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
-| AC1  | User is on children list                      | User taps FAB "Add child"                            | Add-child form is shown                                                                                                               |
-| AC2  | User submitted child form                     | Create API succeeds                                  | User returns to list; new child appears                                                                                               |
-| AC3  | User is on child dashboard                    | User taps "Add feeding"                              | Feeding create screen is shown                                                                                                        |
-| AC4  | User submitted feeding                        | Create API succeeds                                  | User returns to dashboard; summary updates                                                                                            |
-| AC5  | User is on sharing screen                     | User creates invite (role CG)                        | New invite appears with link                                                                                                          |
-| AC6  | User opened invite link                       | User taps Accept                                     | API is called; on success user sees children list                                                                                     |
-| AC7  | User is on export screen                      | User selects CSV, 30 days, Export                    | CSV is downloaded and opened                                                                                                          |
-| AC8  | User is on export screen                      | User selects PDF, Export                             | Job is queued; status is polled; on completion PDF is downloaded                                                                      |
-| AC9  | Child has overdue feeding alert               | User views child dashboard                           | Pattern alert banner is displayed prominently                                                                                         |
-| AC10 | User is on child dashboard                    | User taps "Pediatrician summary"                     | Report is generated with recent trends; share/save options shown                                                                      |
-| AC11 | User is on child dashboard                    | User taps "Advanced tools"                           | Hub screen shows links to pediatrician summary, Fuss Bus, analytics, export, timeline, catch-up, feedings/diapers/naps lists, sharing |
-| AC12 | User is authenticated                         | User opens notifications center                      | List of alerts and reminders is shown with unread count badge                                                                         |
-| AC13 | User is owner/co-parent                       | User sets feeding reminder to 3 hours                | Push notification fires when 3 hours since last feeding                                                                               |
-| AC14 | User configured quiet hours                   | Notification triggers during quiet window            | Notification is suppressed until quiet hours end                                                                                      |
-| AC15 | Event timestamp is in UTC                     | User views timestamp on any screen                   | Time is displayed in device local timezone                                                                                            |
-| AC16 | User is on child dashboard or Advanced tools  | User taps "Fuss Bus"                                 | Fuss Bus wizard is shown (symptom selection, checklist, suggestions); content is age-appropriate; all roles can access                |
-| AC17 | User is on login/greeting                     | User taps "Forgot password" and submits              | Reset email is requested; user sees success or error                                                                                  |
-| AC18 | User opens reset-password link with valid key | User sets new password and submits                   | Password is updated; user is navigated to login or children list                                                                      |
-| AC19 | User is on account screen                     | User edits profile or timezone                       | Changes are saved via API; success or error shown                                                                                     |
-| AC20 | User is on account screen                     | User toggles push notifications                      | FCM registration is updated; in-app state reflects choice                                                                             |
-| AC21 | User is on timeline with 60+ min gap          | User has owner/co-parent role, taps "Add nap" on gap | Nap is created for gap; timeline refreshes                                                                                            |
+| ID   | Given                                              | When                                                 | Then                                                                                                                                  |
+| ---- | -------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- |
+| AC1  | User is on children list                           | User taps FAB "Add child"                            | Add-child form is shown                                                                                                               |
+| AC2  | User submitted child form                          | Create API succeeds                                  | User returns to list; new child appears                                                                                               |
+| AC3  | User is on child dashboard                         | User taps "Add feeding"                              | Feeding create screen is shown                                                                                                        |
+| AC4  | User submitted feeding                             | Create API succeeds                                  | User returns to dashboard; summary updates                                                                                            |
+| AC5  | User is on sharing screen                          | User creates invite (role CG)                        | New invite appears with link                                                                                                          |
+| AC6  | User opened invite link                            | User taps Accept                                     | API is called; on success user sees children list                                                                                     |
+| AC7  | User is on export screen                           | User selects CSV, 30 days, Export                    | CSV is downloaded and opened                                                                                                          |
+| AC8  | User is on export screen                           | User selects PDF, Export                             | Job is queued; status is polled; on completion PDF is downloaded                                                                      |
+| AC9  | Child has overdue feeding alert                    | User views child dashboard                           | Pattern alert banner is displayed prominently                                                                                         |
+| AC10 | User is on child dashboard                         | User taps "Pediatrician summary"                     | Report is generated with recent trends; share/save options shown                                                                      |
+| AC11 | User is on child dashboard                         | User taps "Advanced tools"                           | Hub screen shows links to pediatrician summary, Fuss Bus, analytics, export, timeline, catch-up, feedings/diapers/naps lists, sharing |
+| AC12 | User is authenticated                              | User opens notifications center                      | List of alerts and reminders is shown with unread count badge                                                                         |
+| AC13 | User is owner/co-parent                            | User sets feeding reminder to 3 hours                | Push notification fires when 3 hours since last feeding                                                                               |
+| AC14 | User configured quiet hours                        | Notification triggers during quiet window            | Notification is suppressed until quiet hours end                                                                                      |
+| AC15 | Event timestamp is in UTC                          | User views timestamp on any screen                   | Time is displayed in device local timezone                                                                                            |
+| AC16 | User is on child dashboard or Advanced tools       | User taps "Fuss Bus"                                 | Fuss Bus wizard is shown (symptom selection, checklist, suggestions); content is age-appropriate; all roles can access                |
+| AC17 | User is on login/greeting                          | User taps "Forgot password" and submits              | Reset email is requested; user sees success or error                                                                                  |
+| AC18 | User opens reset-password link with valid key      | User sets new password and submits                   | Password is updated; user is navigated to login or children list                                                                      |
+| AC19 | User is on account screen                          | User edits profile or timezone                       | Changes are saved via API; success or error shown                                                                                     |
+| AC20 | User is on account screen                          | User toggles push notifications                      | FCM registration is updated; in-app state reflects choice                                                                             |
+| AC21 | User is on timeline with 60+ min gap               | User has owner/co-parent role, taps "Add nap" on gap | Nap is created for gap; timeline refreshes                                                                                            |
+| AC22 | User is on greeting screen                         | User taps "Sign up" and submits valid form           | Account is created; user is authenticated and navigated to children list                                                              |
+| AC23 | User submits signup with existing email            | Registration API returns 400                         | Field-level error is shown (e.g. "Email already in use")                                                                              |
+| AC24 | User is on Advanced tools                          | User taps "Trends & analytics"                       | Analytics dashboard shows feeding/diaper/nap charts for configurable time range (7/14/30 days)                                        |
+| AC25 | User has one child, triggers top-level log         | App receives quick-log intent                        | Quick log opens directly for that child                                                                                               |
+| AC26 | User has multiple children, triggers top-level log | App receives quick-log intent                        | User is prompted to select a child; quick log opens for chosen child                                                                  |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -129,6 +147,10 @@ This specification defines requirements for bringing the Android app to feature 
 | Pattern alerts API error                     | Show cached alerts if available; otherwise hide alerts section             |
 | Pediatrician summary gen                     | Show error toast if report generation fails; allow retry                   |
 | Timeline add-nap-in-gap                      | On create failure show error toast; leave timeline unchanged               |
+| Signup validation errors                     | Show field-level errors from API (email taken, weak password, etc.)        |
+| Signup network failure                       | Show generic error; allow retry                                            |
+| Analytics data unavailable                   | Show empty state with message; allow changing time range                   |
+| Top-level quick log with no children         | Navigate to children list with prompt to add a child first                 |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -187,6 +209,12 @@ This specification defines requirements for bringing the Android app to feature 
 - [x] Account profile: edit first name, last name, timezone; change password, delete account, quiet hours
 - [ ] Push notification enable/disable toggle on account screen
 - [ ] Timeline add-nap-in-gap: for gaps ≥ 60 minutes, show "Add nap" for owner/co-parent; create nap spanning gap and refresh timeline
+
+### Phase 6: Signup, analytics dashboard, and top-level quick log
+
+- [ ] SignupScreen: form (first name, last name, email, password, confirm password); call registration API; handle validation errors; navigate to children list on success
+- [ ] AnalyticsDashboardScreen: feeding, diaper, and nap trend charts with configurable time range (7/14/30 days); entry from Advanced tools hub
+- [ ] Top-level quick log: app shortcut and notification action entry point; auto-select child (single) or child picker (multiple); open quick log flow
 
 ---
 
