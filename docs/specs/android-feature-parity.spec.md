@@ -152,7 +152,7 @@ This specification defines requirements for bringing the Android app to feature 
 - [x] Design system alignment (colors, typography from docs) — Color.kt and Theme.kt match DESIGN_SYSTEM.md; Typography scale added
 - [x] NotificationsApi: fetch notifications list with unread counts; mark as read
 - [x] NotificationsScreen: in-app notification center with unread badge on nav
-- [ ] FCM integration: register device token; receive and display native push notifications
+- [x] FCM integration: register device token; receive and display native push notifications
 - [x] Feeding/nap reminder configuration: interval picker on child settings (owner/co-parent only)
 - [x] Quiet hours: account settings UI for configuring suppression window; enforce locally
 - [x] Timezone-aware display: convert UTC timestamps to device timezone; relative time helpers ("2 hours ago")
