@@ -157,7 +157,7 @@ This specification defines requirements for bringing the Android app to feature 
 - [x] Quiet hours: account settings UI for configuring suppression window; enforce locally
 - [x] Timezone-aware display: convert UTC timestamps to device timezone; relative time helpers ("2 hours ago")
 - [x] Dashboard performance: batched summary API call; skeleton loading screens
-- [ ] Accessibility: large tap targets, WCAG 2.1 AA contrast, TalkBack content descriptions
+- [x] Accessibility: large tap targets, WCAG 2.1 AA contrast, TalkBack content descriptions
 
 ---
 
