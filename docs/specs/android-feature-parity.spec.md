@@ -150,8 +150,8 @@ This specification defines requirements for bringing the Android app to feature 
 - [x] Child timeline screen (chronological activity list)
 - [x] Account settings parity (e.g. change password) — Profile screen with Account tab (change password, delete account)
 - [x] Design system alignment (colors, typography from docs) — Color.kt and Theme.kt match DESIGN_SYSTEM.md; Typography scale added
-- [ ] NotificationsApi: fetch notifications list with unread counts; mark as read
-- [ ] NotificationsScreen: in-app notification center with unread badge on nav
+- [x] NotificationsApi: fetch notifications list with unread counts; mark as read
+- [x] NotificationsScreen: in-app notification center with unread badge on nav
 - [ ] FCM integration: register device token; receive and display native push notifications
 - [ ] Feeding/nap reminder configuration: interval picker on child settings (owner/co-parent only)
 - [ ] Quiet hours: account settings UI for configuring suppression window; enforce locally
