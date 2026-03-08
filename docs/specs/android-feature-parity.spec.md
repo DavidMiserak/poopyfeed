@@ -6,7 +6,7 @@ This specification defines requirements for bringing the Android app to feature 
 
 **Source of truth:** The Angular app in `front-end/poopyfeed` is the reference. Routes and capabilities are listed in `docs/specs/frontend-feature-inventory.spec.md` and `front-end/poopyfeed/src/app/app.routes.ts`.
 
-**User value:** Caregivers can use the native Android app to perform the same actions as on the web: manage children, log feedings/diapers/naps, manage sharing, accept invites, view pattern alerts, receive push notifications and reminders, export data, reset password, quick-log from shortcuts, and use the full account and timeline flows.
+**User value:** Caregivers can use the native Android app to perform the same actions as on the web: manage children, log feedings/diapers/naps, manage sharing, accept invites, view pattern alerts, receive push notifications and reminders, export data, reset password, and use the full account and timeline flows.
 
 **Intentionally excluded (web-only):** Public marketing pages (`/`, `/contact`, `/privacy`, `/terms`), PWA installability, service worker caching, and update banner. These are handled by the web app and have no native-app equivalent.
 
@@ -27,7 +27,6 @@ This specification defines requirements for bringing the Android app to feature 
 ### Tracking (feedings, diapers, naps)
 
 - **FR-6** While viewing a child dashboard, when the user taps "Add feeding" (or diaper or nap), the system shall navigate to the corresponding create screen and on save create the record and navigate back.
-- **FR-6a** When the user invokes "Quick log" (e.g. from a home-screen widget or shortcut for feeding, diaper, or nap), the system shall navigate to the last-used child's create screen for that type; if no last-used child exists, the system shall navigate to the children list and show a brief message to pick a child.
 - **FR-7** When the user saves or deletes a feeding, diaper, or nap, the system shall show success or error feedback (e.g. Snackbar or error banner) and refresh the list or dashboard as appropriate.
 - **FR-8** While viewing a child, when the user opens the feedings (or diapers or naps) list, the system shall display all records for that child with options to add, edit, and delete.
 
@@ -102,11 +101,9 @@ This specification defines requirements for bringing the Android app to feature 
 | AC16 | User is on child dashboard or Advanced tools  | User taps "Fuss Bus"                                 | Fuss Bus wizard is shown (symptom selection, checklist, suggestions); content is age-appropriate; all roles can access                |
 | AC17 | User is on login/greeting                     | User taps "Forgot password" and submits              | Reset email is requested; user sees success or error                                                                                  |
 | AC18 | User opens reset-password link with valid key | User sets new password and submits                   | Password is updated; user is navigated to login or children list                                                                      |
-| AC19 | User has a last-used child                    | User invokes Quick log (e.g. widget) for feeding     | App opens that child's feeding create screen                                                                                          |
-| AC20 | User has no last-used child                   | User invokes Quick log                               | App opens children list with message to pick a child                                                                                  |
-| AC21 | User is on account screen                     | User edits profile or timezone                       | Changes are saved via API; success or error shown                                                                                     |
-| AC22 | User is on account screen                     | User toggles push notifications                      | FCM registration is updated; in-app state reflects choice                                                                             |
-| AC23 | User is on timeline with 60+ min gap          | User has owner/co-parent role, taps "Add nap" on gap | Nap is created for gap; timeline refreshes                                                                                            |
+| AC19 | User is on account screen                     | User edits profile or timezone                       | Changes are saved via API; success or error shown                                                                                     |
+| AC20 | User is on account screen                     | User toggles push notifications                      | FCM registration is updated; in-app state reflects choice                                                                             |
+| AC21 | User is on timeline with 60+ min gap          | User has owner/co-parent role, taps "Add nap" on gap | Nap is created for gap; timeline refreshes                                                                                            |
 
 <!-- markdownlint-enable MD060 -->
 
@@ -186,8 +183,9 @@ This specification defines requirements for bringing the Android app to feature 
 
 - [ ] Forgot password: screen or link from login to request reset email; call backend; show success/error
 - [ ] Reset password: deep link `poopyfeed://auth/reset-password/{key}` and in-app screen; form to set new password; call reset API
-- [ ] Quick log: home-screen widget or shortcut (feeding/diaper/nap) → last-used child create screen, or children list with message if none
-- [ ] Account profile: edit first name, last name, email; timezone preference; push notification enable/disable toggle (in addition to existing change password, delete account, quiet hours)
+- [x] Quick log (in-app): FAB on child detail screen opens quick log bottom sheet (feeding/diaper/nap) for that child
+- [x] Account profile: edit first name, last name, timezone; change password, delete account, quiet hours
+- [ ] Push notification enable/disable toggle on account screen
 - [ ] Timeline add-nap-in-gap: for gaps ≥ 60 minutes, show "Add nap" for owner/co-parent; create nap spanning gap and refresh timeline
 
 ---
