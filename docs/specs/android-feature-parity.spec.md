@@ -155,7 +155,7 @@ This specification defines requirements for bringing the Android app to feature 
 - [ ] FCM integration: register device token; receive and display native push notifications
 - [x] Feeding/nap reminder configuration: interval picker on child settings (owner/co-parent only)
 - [x] Quiet hours: account settings UI for configuring suppression window; enforce locally
-- [ ] Timezone-aware display: convert UTC timestamps to device timezone; relative time helpers ("2 hours ago")
+- [x] Timezone-aware display: convert UTC timestamps to device timezone; relative time helpers ("2 hours ago")
 - [ ] Dashboard performance: batched summary API call; skeleton loading screens
 - [ ] Accessibility: large tap targets, WCAG 2.1 AA contrast, TalkBack content descriptions
 
