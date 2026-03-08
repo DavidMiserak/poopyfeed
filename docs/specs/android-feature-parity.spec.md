@@ -153,7 +153,7 @@ This specification defines requirements for bringing the Android app to feature 
 - [x] NotificationsApi: fetch notifications list with unread counts; mark as read
 - [x] NotificationsScreen: in-app notification center with unread badge on nav
 - [ ] FCM integration: register device token; receive and display native push notifications
-- [ ] Feeding/nap reminder configuration: interval picker on child settings (owner/co-parent only)
+- [x] Feeding/nap reminder configuration: interval picker on child settings (owner/co-parent only)
 - [ ] Quiet hours: account settings UI for configuring suppression window; enforce locally
 - [ ] Timezone-aware display: convert UTC timestamps to device timezone; relative time helpers ("2 hours ago")
 - [ ] Dashboard performance: batched summary API call; skeleton loading screens
