@@ -9,31 +9,31 @@ x-image-config: &image-config
     IMAGE_TAG: ${IMAGE_TAG:-dev}
 
 x-resource-limits: &resource-limits
-  resources:
-    limits:
-      cpus: "1"
-      memory: 512M
-    reservations:
-      cpus: "0.5"
-      memory: 256M
+    resources:
+        limits:
+            cpus: "4"
+            memory: 1024M
+        reservations:
+            cpus: "2"
+            memory: 512M
 
 x-frontend-resource-limits: &frontend-resource-limits
-  resources:
-    limits:
-      cpus: "0.5"
-      memory: 256M
-    reservations:
-      cpus: "0.25"
-      memory: 128M
+    resources:
+        limits:
+            cpus: "0.5"
+            memory: 256M
+        reservations:
+            cpus: "0.25"
+            memory: 128M
 
 x-db-resource-limits: &db-resource-limits
-  resources:
-    limits:
-      cpus: "1"
-      memory: 1G
-    reservations:
-      cpus: "0.5"
-      memory: 512M
+    resources:
+        limits:
+            cpus: "1"
+            memory: 1G
+        reservations:
+            cpus: "0.5"
+            memory: 512M
 
 services:
     # Redis cache & session store
