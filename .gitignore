@@ -69,3 +69,7 @@ terminals/
 .aider*
 aider.chat.*.md
 docs/plans/
+
+# Git worktrees (isolated workspaces)
+.worktrees/
+worktrees/
